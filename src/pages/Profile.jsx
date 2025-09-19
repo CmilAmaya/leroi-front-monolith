@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from 'react-hot-toast';
 import { User } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import ConfirmModal from "../components/Modal";
@@ -134,14 +135,23 @@ function Profile() {
       );
 
       if (!response.ok) {
-        throw new Error("Error al borrar la cuenta");
+        let errorMsg = "Error al borrar la cuenta";
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.detail || errorMsg;
+        } catch {}
+        toast.error(errorMsg);
+        return;
       }
 
-      localStorage.removeItem("token");
-      window.location.href = "/login";
+      toast.success("Cuenta eliminada correctamente");
+      setTimeout(() => {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }, 2000); // Espera 2 segundos antes de redirigir y luego borra el token
     } catch (error) {
       console.error("Error al borrar la cuenta:", error);
-      alert("Hubo un error al intentar borrar la cuenta.");
+      toast.error("Hubo un error al intentar borrar la cuenta.");
     } finally {
       setShowConfirmModal(false);
     }
@@ -172,15 +182,16 @@ function Profile() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.detail || "Error al actualizar los datos");
+        toast.error(result.detail || "Error al actualizar los datos");
+        return;
       }
 
-      alert("Datos actualizados correctamente");
+      toast.success("Datos actualizados correctamente");
       setUserData({ ...userData, ...updatedData });
       setShowEditModal(false);
     } catch (error) {
       console.error("Error:", error);
-      alert(error.message);
+      toast.error(error.message);
     }
   };
 
