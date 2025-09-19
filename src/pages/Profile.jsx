@@ -98,10 +98,10 @@ function Profile() {
 
       // Actualizar el estado local con el nuevo valor de 2FA
       setUserData({ ...userData, TFA_enabled: new2FAStatus });
-      alert(`Autenticación de doble factor ${new2FAStatus ? "activada" : "desactivada"} correctamente.`);
+      toast.success(`Autenticación de doble factor ${new2FAStatus ? "activada" : "desactivada"} correctamente.`);
     } catch (error) {
       console.error("Error:", error);
-      alert("Hubo un error al actualizar la autenticación de doble factor.");
+      toast.error("Hubo un error al actualizar la autenticación de doble factor.");
     } finally {
       setShow2FAModal(false); 
     }
