@@ -119,13 +119,15 @@ function Register() {
         },
         body: JSON.stringify({ email, code: verificationCode })
       });
-  
+
+      // CAMBIO: Mostrar el mensaje real del backend al usuario
       if (response.ok) {
         toast.success('Código de verificación correcto');
         setShowVerificationModal(false);
         await handleRegister();
       } else {
-        toast.error('Código de verificación incorrecto o expirado');
+        const errorData = await response.json();
+        toast.error(errorData.detail || 'Código de verificación incorrecto o expirado');
       }
     } catch (error) {
       toast.error('Error al verificar el código');
