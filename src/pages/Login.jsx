@@ -109,7 +109,8 @@ function Login() {
     try {
       setIsSubmittingCode(true);
   
-      const verifyCodeResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/verify-code`, {
+      // CAMBIO: Usar endpoint /verify-2fa-code para doble autenticación
+      const verifyCodeResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/verify-2fa-code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
