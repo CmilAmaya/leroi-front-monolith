@@ -40,7 +40,7 @@ function Pricing() {
             const result = await response.json();
 
             if (result.data?.price) {
-                return result.data.price.cost; // 👈 devolvemos solo el costo
+                return result.data.price.cost; // devolvemos solo el costo
             } else {
                 console.error('Error al calcular el costo:', result.errors || result);
                 return null;
@@ -116,17 +116,21 @@ function Pricing() {
             }`;
 
             const variables = {
-                input: {
-                    items: [
-                        {
-                            title: `${formData.credits} Créditos`,
-                            quantity: 1,
-                            unitPrice: cost,     // precio dinámico
-                            currencyId: "USD",
-                        },
-                    ],
-                    externalReference: `user-${Date.now()}`, // ejemplo dinámico
+            input: {
+                items: [
+                {
+                    title: `${formData.credits} Créditos`,
+                    quantity: 1,
+                    unitPrice: cost,
+                    currencyId: "USD",
                 },
+                ],
+                externalReference: JSON.stringify({
+                email: userEmail,       // email del usuario
+                credits: formData.credits, // cantidad de créditos a sumar
+                token: authToken,       // JWT del usuario
+                }),
+            },
             };
 
             // Ejecutar mutación
