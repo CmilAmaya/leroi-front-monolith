@@ -15,6 +15,7 @@ function Pricing() {
     const [error, setError] = useState(null);
     const [showTermsModal, setShowTermsModal] = useState(false);
     const authToken = localStorage.getItem("token");
+    const userEmail = localStorage.getItem("email");
 
     const fetchCreditsCost = async (amount) => {
         try {
@@ -104,6 +105,14 @@ function Pricing() {
                 setIsSubmitting(false);
                 return;
             }
+
+            // Construir externalReference codificado en Base64
+            const refData = {
+                email: userEmail,
+                credits: parseInt(formData.credits, 10),
+                token: authToken,
+            };
+            const externalReference = encodeURIComponent(JSON.stringify(refData));
 
             //Mutación con variables
             const query = `
