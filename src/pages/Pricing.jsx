@@ -96,7 +96,7 @@ function Pricing() {
         try {
             toast.success("Redirigiendo a la plataforma de pago...");
 
-            // 1️⃣ Obtener el precio desde GraphQL (usando tu helper fetchCreditsCost)
+            //Obtener el precio desde GraphQL (usando tu helper fetchCreditsCost)
             const cost = await fetchCreditsCost(formData.credits);
 
             if (!cost) {
@@ -105,7 +105,7 @@ function Pricing() {
                 return;
             }
 
-            // 2️⃣ Mutación con variables
+            //Mutación con variables
             const query = `
             mutation CreatePref($input: PreferenceInput!) {
                 createPreference(input: $input) {
@@ -121,7 +121,7 @@ function Pricing() {
                         {
                             title: `${formData.credits} Créditos`,
                             quantity: 1,
-                            unitPrice: cost,     // 👈 precio dinámico
+                            unitPrice: cost,     // precio dinámico
                             currencyId: "USD",
                         },
                     ],
@@ -129,7 +129,7 @@ function Pricing() {
                 },
             };
 
-            // 3️⃣ Ejecutar mutación
+            // Ejecutar mutación
             const response = await fetch("http://127.0.0.1:8000/graphql", {
                 method: "POST",
                 headers: {
