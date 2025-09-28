@@ -82,6 +82,7 @@ function Login() {
         // Verificar si se requiere 2FA
         if (data.status === '2fa_required') {
           setUserEmail(formData.email);
+          localStorage.setItem("userEmail", formData.email);
           const code = generateVerificationCode(); // Generar el código
           await sendVerificationEmail(formData.email, code); // Enviar el correo
           setVerificationCode(code);
@@ -90,6 +91,7 @@ function Login() {
         } else {
           // Si no se requiere 2FA, guardar el token y redirigir
           const token = data.access_token;
+          localStorage.setItem("userEmail", formData.email);
           localStorage.setItem('token', token);
           navigate('/roadmap');
           window.location.reload('/roadmap');

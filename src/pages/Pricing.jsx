@@ -15,23 +15,35 @@ function Pricing() {
     const [error, setError] = useState(null);
     const [showTermsModal, setShowTermsModal] = useState(false);
     const authToken = localStorage.getItem("token");
+    const userEmail = localStorage.getItem("userEmail");
 
     const fetchCreditsCost = async (amount) => {
-        const creditsData = { amount };
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/price`, {
+            const query = `
+            query GetPrice($credits: Int!) {
+                price(credits: $credits) {
+                    credits
+                    cost
+                    currency
+                }
+            }`;
+
+            const variables = { credits: parseInt(amount, 10) };
+
+            const response = await fetch("http://127.0.0.1:8000/graphql", {
                 method: 'POST',
                 headers: {
-                    'Content-type': 'application/json',
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(creditsData),
+                body: JSON.stringify({ query, variables }),
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                return data.costo; // Devuelve el costo directamente
+            const result = await response.json();
+
+            if (result.data?.price) {
+                return result.data.price.cost; // devolvemos solo el costo
             } else {
-                console.error('Error al calcular el costo de los créditos');
+                console.error('Error al calcular el costo:', result.errors || result);
                 return null;
             }
         } catch (error) {
@@ -83,29 +95,65 @@ function Pricing() {
 
         setIsSubmitting(true);
         try {
-            toast.success('Redirigiendo a la plataforma de pago...');
-            const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/create-payment/${encodeURIComponent(formData.credits)}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${authToken}`,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
+            toast.success("Redirigiendo a la plataforma de pago...");
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Enlace de compra:', data.payment_url);
-                // Redirige a la URL de pago proporcionada por el backend
-                window.location.href = data.payment_url;
+            //Obtener el precio desde GraphQL (usando tu helper fetchCreditsCost)
+            const cost = await fetchCreditsCost(formData.credits);
+
+            if (!cost) {
+                toast.error("No se pudo obtener el precio de los créditos.");
+                setIsSubmitting(false);
+                return;
+            }
+
+            // Convierte a string seguro: letras, números y guiones        
+            //Mutación con variables
+            const query = `
+            mutation CreatePref($input: PreferenceInput!) {
+                createPreference(input: $input) {
+                    id
+                    initPoint
+                    sandboxInitPoint
+                }
+            }`;
+
+            const variables = {
+            input: {
+                items: [
+                {
+                    title: `${formData.credits} Créditos`,
+                    quantity: 1,
+                    unitPrice: cost,
+                    currencyId: "USD",
+                },
+                ],
+                externalReference:`{"email":"${userEmail}","credits":${formData.credits}}`,
+            },
+            };
+
+            // Ejecutar mutación
+            const response = await fetch("http://127.0.0.1:8000/graphql", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ query, variables }),
+            });
+
+            const result = await response.json();
+
+            const payment = result.data?.createPreference;
+            if (payment) {
+                console.log("Link de pago:", payment.initPoint);
+                window.open(payment.initPoint, "_blank"); // abre en nueva pestaña
             } else {
-                console.error('Error al generar el enlace de compra');
+                console.error("Error en GraphQL:", result.errors);
+                setError("Ocurrió un error al generar el enlace de pago.");
             }
         } catch (error) {
-            console.error('Error en la operación:', error);
-            setError('Ocurrió un error al procesar la operación.');
+            console.error("Error en la operación:", error);
+            setError("Ocurrió un error al procesar la operación.");
         } finally {
             setIsSubmitting(false);
         }
