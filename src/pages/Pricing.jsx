@@ -88,6 +88,29 @@ function Pricing() {
         }
     };
 
+    const createSession = async (authToken, credits, email) => {
+        const query = `
+            mutation CreateSession($authToken: String!, $credits: Int!, $email: String!) {
+                createSession(authToken: $authToken, credits: $credits, email: $email) {
+                    sessionId
+                }
+            }
+        `;
+
+        const variables = { authToken, credits: parseInt(credits, 10), email };
+
+        const response = await fetch("http://127.0.0.1:8000/graphql", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ query, variables }),
+        });
+
+        const result = await response.json();
+        return result.data?.createSession?.sessionId || null;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -106,7 +129,13 @@ function Pricing() {
                 return;
             }
 
-            // Convierte a string seguro: letras, números y guiones        
+            const sessionId = await createSession(authToken, formData.credits, userEmail);
+                if (!sessionId) {
+                    toast.error("No se pudo generar la sesión segura.");
+                    setIsSubmitting(false);
+                    return;
+                }   
+
             //Mutación con variables
             const query = `
             mutation CreatePref($input: PreferenceInput!) {
@@ -127,7 +156,7 @@ function Pricing() {
                     currencyId: "USD",
                 },
                 ],
-                externalReference:`{"email":"${userEmail}","credits":${formData.credits}}`,
+                externalReference: `{"sessionId":"${sessionId}"}`,
             },
             };
 
