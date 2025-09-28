@@ -176,7 +176,10 @@ function Roadmap() {
   
       const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_PREPROCESAMIENTO}/analyses`, {
         method: 'POST',
-        headers: { Accept: 'application/json' },
+        headers: { 
+          Authorization: `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(dataToSend),
       });
   
@@ -214,9 +217,13 @@ function Roadmap() {
       }
       analyzePromise
         .then((analyzeResponse) => {
-          return analyzeResponse.json();
+          response = analyzeResponse.json()
+          console.log("Analyze result:", response);
+          return response;
+          
         })
         .then((analyzeResult) => {
+          // console.log("Analyze result:", analyzeResult);
           if (analyzeResult.has_virus) {
             toast.error("El archivo contiene virus. El usuario ha sido eliminado.");
           }
