@@ -15,7 +15,7 @@ function Pricing() {
     const [error, setError] = useState(null);
     const [showTermsModal, setShowTermsModal] = useState(false);
     const authToken = localStorage.getItem("token");
-    const userEmail = localStorage.getItem("email");
+    const userEmail = localStorage.getItem("userEmail");
 
     const fetchCreditsCost = async (amount) => {
         try {
@@ -106,14 +106,7 @@ function Pricing() {
                 return;
             }
 
-            // Construir externalReference codificado en Base64
-            const refData = {
-                email: userEmail,
-                credits: parseInt(formData.credits, 10),
-                token: authToken,
-            };
-            const externalReference = encodeURIComponent(JSON.stringify(refData));
-
+            // Convierte a string seguro: letras, números y guiones        
             //Mutación con variables
             const query = `
             mutation CreatePref($input: PreferenceInput!) {
@@ -134,11 +127,7 @@ function Pricing() {
                     currencyId: "USD",
                 },
                 ],
-                externalReference: JSON.stringify({
-                email: userEmail,       // email del usuario
-                credits: formData.credits, // cantidad de créditos a sumar
-                token: authToken,       // JWT del usuario
-                }),
+                externalReference:`{"email":"${userEmail}","credits":${formData.credits}}`,
             },
             };
 
