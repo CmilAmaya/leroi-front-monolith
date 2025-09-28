@@ -19,6 +19,7 @@ import RoadmapsSection from './pages/roadmapsCreados';
 import Questions from './pages/Questions';
 import Blog from './pages/Blog';
 import PaymentFailure from './pages/PaymentFailure';
+import PaymentSuccess from './pages/PaymentSuccess';
 
 function App() {
   return (
@@ -63,6 +64,7 @@ function App() {
             <Route path="/roadmapsCreados" element={<ProtectedRoute><RoadmapsSection /></ProtectedRoute>} />
             <Route path='/questions' element={<ProtectedRoute><Questions /></ProtectedRoute>} />
             <Route path="/pricing/failure" element={<PaymentFailure />} />
+            <Route path="/pricing/success" element={<PaymentSuccess />} />
           </Routes>
         </div>
       </Router>
