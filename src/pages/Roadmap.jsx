@@ -217,9 +217,7 @@ function Roadmap() {
       }
       analyzePromise
         .then((analyzeResponse) => {
-          response = analyzeResponse.json()
-          console.log("Analyze result:", response);
-          return response;
+          return analyzeResponse.json();
           
         })
         .then((analyzeResult) => {
