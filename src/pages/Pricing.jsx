@@ -30,7 +30,7 @@ function Pricing() {
 
             const variables = { credits: parseInt(amount, 10) };
 
-            const response = await fetch("http://127.0.0.1:8000/graphql", {
+            const response = await fetch(`${import.meta.env.VITE_PAYMENT_BE}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ function Pricing() {
 
         const variables = { authToken, credits: parseInt(credits, 10), email };
 
-        const response = await fetch("http://127.0.0.1:8000/graphql", {
+        const response = await fetch(`${import.meta.env.VITE_PAYMENT_BE}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -161,7 +161,7 @@ function Pricing() {
             };
 
             // Ejecutar mutación
-            const response = await fetch("http://127.0.0.1:8000/graphql", {
+            const response = await fetch(`${import.meta.env.VITE_PAYMENT_BE}`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${authToken}`,
