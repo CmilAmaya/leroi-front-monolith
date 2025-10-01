@@ -4,7 +4,7 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    min-height: 50vh;
+    min-height: 57vh;
     background-color: var(--background);
     padding: 2.5rem 1.25rem;
 }
@@ -13,7 +13,7 @@
     color: var(--primary);
     font-size: 2.25rem; 
     margin-top: 3.5rem;
-    margin-bottom: 3.5rem;
+    margin-bottom: 2.5rem;
 }
 
 .logo-container {

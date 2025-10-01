@@ -32,10 +32,11 @@ function Login() {
   // Función para enviar el correo de verificación
   const sendVerificationEmail = async (email, code) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/send-verification`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users_authentication_path/send-verification`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({
           email: email,
@@ -60,24 +61,29 @@ function Login() {
   // Función para manejar el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    console.log('Form submit triggered', formData);
     
     if (validateForm()) {
       setIsSubmitting(true);
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/login`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users_authentication_path/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'x-api-key': import.meta.env.VITE_API_KEY
           },
           body: JSON.stringify(formData)
         });
-
+        console.log("ESTA ES LA REPUESTA DEL LOGIN", response)
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.detail);
         }
 
         const data = await response.json();
+
+        console.log('Token before storing:', data.access_token);
 
         // Verificar si se requiere 2FA
         if (data.status === '2fa_required') {
@@ -92,7 +98,7 @@ function Login() {
           const token = data.access_token;
           localStorage.setItem('token', token);
           navigate('/roadmap');
-          window.location.reload('/roadmap');
+          //window.location.reload('/roadmap');
         }
 
       } catch (error) {
@@ -109,10 +115,11 @@ function Login() {
     try {
       setIsSubmittingCode(true);
   
-      const verifyCodeResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/verify-code`, {
+      const verifyCodeResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users_authentication_path/verify-code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({
           email: userEmail,
@@ -160,10 +167,11 @@ function Login() {
       };
       
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/login-google`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users_authentication_path/login-google`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'x-api-key': import.meta.env.VITE_API_KEY
           },
           body: JSON.stringify(userData)
         });
@@ -213,10 +221,11 @@ function Login() {
 
     setIsForgotPasswordSubmitting(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/forgot-password`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users_authentication_path/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({ email: forgotPasswordEmail })
       });

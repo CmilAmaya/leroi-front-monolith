@@ -145,16 +145,17 @@ function Roadmap() {
       formData.append("file", file);
       formData.append("email", email);
   
-      const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/preview-cost-process-file`, {
+      const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/preview-cost-process-file`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${authToken}`,
           'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify(dataToSend),
       });
   
-      const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/analyze`, {
+      const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/analyze`, {
         method: 'POST',
         headers: { Accept: 'application/json' },
         body: formData,
@@ -255,11 +256,12 @@ const handleDrop = (e) => {
     };
   
     try {
-      const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/process-file`, {
+      const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/documents`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json",
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify(dataToSend),
       });
@@ -289,11 +291,12 @@ const handleDrop = (e) => {
     setLoadingPage(true);
     setLoadingText("Estamos creando tu ruta de aprendizaje 😁");
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/generate-roadmap`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/roadmaps`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authToken}`,
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({ topic }),
       });
@@ -312,6 +315,7 @@ const handleDrop = (e) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({ topic }),
       });

@@ -41,10 +41,11 @@ function Register() {
     if (validateForm()) {
       setIsSubmitting(true);
       try {
-        const emailCheckResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/check-email`, {
+        const emailCheckResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users_authentication_path/check-email`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'x-api-key': import.meta.env.VITE_API_KEY
           },
           body: JSON.stringify({ email: formData.email }),
         });
@@ -84,10 +85,11 @@ function Register() {
 
   const sendVerificationEmail = async (email, code) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/send-verification`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users_authentication_path/send-verification`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({
           email: email,
@@ -112,10 +114,11 @@ function Register() {
   const handleVerifyCode = async (email, verificationCode) => {
     try {
       setIsSubmittingCode(true);
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/verify-code`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users_authentication_path/verify-code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({ email, code: verificationCode })
       });
@@ -148,10 +151,11 @@ function Register() {
       };
       console.log('Datos del usuario:', userData);
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/register`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users_authentication_path/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'x-api-key': import.meta.env.VITE_API_KEY
           },
           body: JSON.stringify(userData)
         });
@@ -216,10 +220,11 @@ function Register() {
       provider: 'email'
     };
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/register`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users_authentication_path/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify(userData)
       });

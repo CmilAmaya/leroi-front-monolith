@@ -11,15 +11,18 @@ const ProtectedRoute = ({ children }) => {
   useEffect(() => {
     const validateToken = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/validate-token`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users_authentication_path/validate-token`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
+            'x-api-key': import.meta.env.VITE_API_KEY
           },
         });
 
         if (!response.ok) {
+          console.log(response.status, await response.text())
+          console.log("ESTE ES EL TOKEN", token);
           throw new Error('Token inválido o expirado');
         }
 
