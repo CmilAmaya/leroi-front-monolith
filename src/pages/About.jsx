@@ -3,10 +3,13 @@ import "../styles/styles.css";
 import "../styles/about.css";
 import Footer from "../components/Footer";
 import imagotipo from "../assets/imagotipo.png";
-import member1 from "../assets/mateo.png"; 
+import member1 from "../assets/nova.jpg"; 
 import member2 from "../assets/camila.png";
-import member3 from "../assets/anderson.png";
-import member4 from "../assets/juan.png";
+import member3 from "../assets/jhoan.jpg";
+import member4 from "../assets/cris.jpg";
+import member5 from "../assets/duvan.jpg";
+import member6 from "../assets/diego.jpg";
+import member7 from "../assets/juan.jpg";
 import { Mail, Github } from "lucide-react"; 
 
 function About() {
@@ -51,16 +54,14 @@ function About() {
             <section className="team" id="team">
                 <h3>Conoce al Equipo</h3>
                 <div className="team-cards">
+
                     {/* Tarjeta de miembro 1 */}
                     <div className="team-card">
-                        <img src={member1} alt="Sebastián Lopez" className="team-photo" />
+                        <img src={member2} alt="Camila Amaya" className="team-photo" />
                         <div className="team-card-content">
-                            <h4>Sebastián Lopez</h4>
+                            <h4>Camila Amaya</h4>
                             <div className="team-icons">
-                                <a href="mailto:slopezsi@unal.edu.co" target="_blank" rel="noopener noreferrer">
-                                    <Mail className="icon h-5 w-5" />
-                                </a>
-                                <a href="https://github.com/Sebls" target="_blank" rel="noopener noreferrer">
+                                <a href="https://github.com/CmilAmaya" target="_blank" rel="noopener noreferrer">
                                     <Github className="icon h-5 w-5" />
                                 </a>
                             </div>
@@ -69,13 +70,23 @@ function About() {
 
                     {/* Tarjeta de miembro 2 */}
                     <div className="team-card">
-                        <img src={member2} alt="Camila Amaya" className="team-photo" />
+                        <img src={member4} alt="Cristian Barrera" className="team-photo" />
                         <div className="team-card-content">
-                            <h4>Camila Amaya</h4>
+                            <h4>Cristian Barrera</h4>
                             <div className="team-icons">
-                                <a href="mailto:mamayaro@unal.edu.co" target="_blank" rel="noopener noreferrer">
-                                    <Mail className="icon h-5 w-5" />
+                                <a href="https://github.com/Sebls" target="_blank" rel="noopener noreferrer">
+                                    <Github className="icon h-5 w-5" />
                                 </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Tarjeta de miembro 3 */}
+                    <div className="team-card">
+                        <img src={member6} alt="Camila Amaya" className="team-photo" />
+                        <div className="team-card-content">
+                            <h4>Diego Alvarez</h4>
+                            <div className="team-icons">
                                 <a href="https://github.com/CmilAmaya" target="_blank" rel="noopener noreferrer">
                                     <Github className="icon h-5 w-5" />
                                 </a>
@@ -85,13 +96,10 @@ function About() {
 
                     {/* Tarjeta de miembro 3 */}
                     <div className="team-card">
-                        <img src={member3} alt="Anderson Mateus" className="team-photo" />
+                        <img src={member5} alt="Anderson Mateus" className="team-photo" />
                         <div className="team-card-content">
-                            <h4>Anderson Mateus</h4>
+                            <h4>Duvan Mondragon</h4>
                             <div className="team-icons">
-                                <a href="mailto:amateusl@unal.edu.co" target="_blank" rel="noopener noreferrer">
-                                    <Mail className="icon h-5 w-5" />
-                                </a>
                                 <a href="https://github.com/amateusl" target="_blank" rel="noopener noreferrer">
                                     <Github className="icon h-5 w-5" />
                                 </a>
@@ -101,13 +109,36 @@ function About() {
 
                     {/* Tarjeta de miembro 4 */}
                     <div className="team-card">
-                        <img src={member4} alt="Juan Rodríguez" className="team-photo" />
+                        <img src={member3} alt="Juan Rodríguez" className="team-photo" />
                         <div className="team-card-content">
-                            <h4>Juan Rodríguez</h4>
+                            <h4>Jhoan Franco</h4>
                             <div className="team-icons">
-                                <a href="mailto:juarodriguezgo@unal.edu.co" target="_blank" rel="noopener noreferrer">
-                                    <Mail className="icon h-5 w-5" />
+                                <a href="https://github.com/juarodriguezg" target="_blank" rel="noopener noreferrer">
+                                    <Github className="icon h-5 w-5" />
                                 </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Tarjeta de miembro 4 */}
+                    <div className="team-card">
+                        <img src={member7} alt="Juan Rodríguez" className="team-photo" />
+                        <div className="team-card-content">
+                            <h4>Juan Ramirez</h4>
+                            <div className="team-icons">
+                                <a href="https://github.com/juarodriguezg" target="_blank" rel="noopener noreferrer">
+                                    <Github className="icon h-5 w-5" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Tarjeta de miembro 4 */}
+                    <div className="team-card">
+                        <img src={member1} alt="Juan Rodríguez" className="team-photo" />
+                        <div className="team-card-content">
+                            <h4>Sergio Nova</h4>
+                            <div className="team-icons">
                                 <a href="https://github.com/juarodriguezg" target="_blank" rel="noopener noreferrer">
                                     <Github className="icon h-5 w-5" />
                                 </a>

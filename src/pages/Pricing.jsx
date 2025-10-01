@@ -33,7 +33,8 @@ function Pricing() {
             const response = await fetch(`${import.meta.env.VITE_PAYMENT_BE}`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-type': 'application/json',
+                    'x-api-key': import.meta.env.VITE_API_KEY
                 },
                 body: JSON.stringify({ query, variables }),
             });
