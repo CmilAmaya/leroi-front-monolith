@@ -245,7 +245,7 @@ const handleDrop = (e) => {
   
     setLoadingPage(true);
     setLoadingText("Buscando temas relacionados... 📈🧠📚");
-    console.log("🚀 URL que está usando:", import.meta.env.VITE_BACKEND_URL_LEARNING);
+    console.log("🚀 URL que está usando:", import.meta.env.VITE_BACKEND_URL);
 
   
     const dataToSend = {
@@ -256,7 +256,7 @@ const handleDrop = (e) => {
     };
   
     try {
-      const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/documents`, {
+      const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/documents`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -291,7 +291,7 @@ const handleDrop = (e) => {
     setLoadingPage(true);
     setLoadingText("Estamos creando tu ruta de aprendizaje 😁");
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/roadmaps`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/roadmaps`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -311,7 +311,7 @@ const handleDrop = (e) => {
       const parseSecondResult = JSON.parse(result.extra_info)
       console.log("VAMO A VERRRR", parseSecondResult);
 
-      const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/related-topics`, {
+      /*const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/related-topics`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -324,7 +324,13 @@ const handleDrop = (e) => {
       const resultTopics = await responseTopics.json();
       const parseResultTopics = JSON.parse(resultTopics);
 
-      setRelatedTopics(parseResultTopics);
+      setRelatedTopics(parseResultTopics);*/
+      setRelatedTopics([
+        "Programación en Python",
+        "Algoritmos y Estructuras de Datos",
+        "Bases de Datos SQL",
+        "Redes de Computadores"
+      ])
       setRoadmapTopics(parseResult);    
       setRoadmapInfo(parseSecondResult);
     } catch (error) {
