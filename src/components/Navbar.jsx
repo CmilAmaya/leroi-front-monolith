@@ -13,7 +13,7 @@ Navbar.defaultProps = {
       about: "Quiénes somos",
       credits: "Créditos",
       faq: "Preguntas frecuentes",
-      blog: "Blog",
+      // blog: "Blog",
       support: "Soporte",
       contact: "Contacto",
       login: "Iniciar sesión",
@@ -31,7 +31,7 @@ Navbar.propTypes = {
       credits: PropTypes.string,
       faq: PropTypes.string,
       support: PropTypes.string,
-      blog: PropTypes.string,
+      //blog: PropTypes.string,
       contact: PropTypes.string,
       login: PropTypes.string,
       signup: PropTypes.string,
@@ -100,7 +100,7 @@ function Navbar({ t }) {
             <NavItem href="/#credits">{t.nav.credits}</NavItem>
             <NavItem href="/#faq">{t.nav.faq}</NavItem>
             <NavItem href="/about/#team">{t.nav.contact}</NavItem>
-            <NavItem href="/blog">{t.nav.blog}</NavItem>
+            {/*<NavItem href="/blog">{t.nav.blog}</NavItem>*/}
             {isAuthenticated && (
               <NavItem href="/roadmap">{t.nav.roadmap}</NavItem>
             )}

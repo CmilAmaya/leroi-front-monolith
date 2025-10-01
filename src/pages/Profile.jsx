@@ -30,11 +30,12 @@ function Profile() {
 
       try {
         // Obtener los datos del usuario
-        const userResponse = await fetch(`${backendUrl}/user-profile`, {
+        const userResponse = await fetch(`${backendUrl}/users_authentication_path/user-profile`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",
+            'x-api-key': import.meta.env.VITE_API_KEY
           },
         });
 
@@ -47,11 +48,12 @@ function Profile() {
         console.log("Datos del usuario:", userData.data);
 
         // Obtener los roadmaps del usuario
-        const roadmapsResponse = await fetch(`${backendUrl}/user-roadmaps`, {
+        const roadmapsResponse = await fetch(`${backendUrl}/users_authentication_path/user-roadmaps`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",
+            'x-api-key': import.meta.env.VITE_API_KEY
           },
         });
 
@@ -83,11 +85,12 @@ function Profile() {
   const confirmToggle2FA = async () => {
     try {
       // Enviar la solicitud al backend para actualizar el estado de 2FA
-      const response = await fetch(`${backendUrl}/update-2fa`, {
+      const response = await fetch(`${backendUrl}/users_authentication_path/update-2fa`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authToken}`,
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({ is_2fa_enabled: new2FAStatus }),
       });
@@ -124,12 +127,13 @@ function Profile() {
 
     try {
       const response = await fetch(
-        `${backendUrl}/delete-user/${encodeURIComponent(userData.email)}`,
+        `${backendUrl}/users_authentication_path/delete-user/${encodeURIComponent(userData.email)}`,
         {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",
+            'x-api-key': import.meta.env.VITE_API_KEY
           },
         }
       );
@@ -170,11 +174,12 @@ function Profile() {
     };
 
     try {
-      const response = await fetch(`${backendUrl}/update-user`, {
+      const response = await fetch(`${backendUrl}/users_authentication_path/update-user`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authToken}`,
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify(trimmedData),
       });
