@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from 'react-hot-toast';
 import { User } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import ConfirmModal from "../components/Modal";
@@ -29,11 +30,12 @@ function Profile() {
 
       try {
         // Obtener los datos del usuario
-        const userResponse = await fetch(`${backendUrl}/user-profile`, {
+        const userResponse = await fetch(`${backendUrl}/users_authentication_path/user-profile`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",
+            'x-api-key': import.meta.env.VITE_API_KEY
           },
         });
 
@@ -46,11 +48,12 @@ function Profile() {
         console.log("Datos del usuario:", userData.data);
 
         // Obtener los roadmaps del usuario
-        const roadmapsResponse = await fetch(`${backendUrl}/user-roadmaps`, {
+        const roadmapsResponse = await fetch(`${backendUrl}/users_authentication_path/user-roadmaps`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",
+            'x-api-key': import.meta.env.VITE_API_KEY
           },
         });
 
@@ -82,11 +85,12 @@ function Profile() {
   const confirmToggle2FA = async () => {
     try {
       // Enviar la solicitud al backend para actualizar el estado de 2FA
-      const response = await fetch(`${backendUrl}/update-2fa`, {
+      const response = await fetch(`${backendUrl}/users_authentication_path/update-2fa`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authToken}`,
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({ is_2fa_enabled: new2FAStatus }),
       });
@@ -97,10 +101,10 @@ function Profile() {
 
       // Actualizar el estado local con el nuevo valor de 2FA
       setUserData({ ...userData, TFA_enabled: new2FAStatus });
-      alert(`Autenticación de doble factor ${new2FAStatus ? "activada" : "desactivada"} correctamente.`);
+      toast.success(`Autenticación de doble factor ${new2FAStatus ? "activada" : "desactivada"} correctamente.`);
     } catch (error) {
       console.error("Error:", error);
-      alert("Hubo un error al actualizar la autenticación de doble factor.");
+      toast.error("Hubo un error al actualizar la autenticación de doble factor.");
     } finally {
       setShow2FAModal(false); 
     }
@@ -123,25 +127,35 @@ function Profile() {
 
     try {
       const response = await fetch(
-        `${backendUrl}/delete-user/${encodeURIComponent(userData.email)}`,
+        `${backendUrl}/users_authentication_path/delete-user/${encodeURIComponent(userData.email)}`,
         {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",
+            'x-api-key': import.meta.env.VITE_API_KEY
           },
         }
       );
 
       if (!response.ok) {
-        throw new Error("Error al borrar la cuenta");
+        let errorMsg = "Error al borrar la cuenta";
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.detail || errorMsg;
+        } catch {}
+        toast.error(errorMsg);
+        return;
       }
 
-      localStorage.removeItem("token");
-      window.location.href = "/login";
+      toast.success("Cuenta eliminada correctamente");
+      setTimeout(() => {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }, 2000); // Espera 2 segundos antes de redirigir y luego borra el token
     } catch (error) {
       console.error("Error al borrar la cuenta:", error);
-      alert("Hubo un error al intentar borrar la cuenta.");
+      toast.error("Hubo un error al intentar borrar la cuenta.");
     } finally {
       setShowConfirmModal(false);
     }
@@ -160,11 +174,12 @@ function Profile() {
     };
 
     try {
-      const response = await fetch(`${backendUrl}/update-user`, {
+      const response = await fetch(`${backendUrl}/users_authentication_path/update-user`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authToken}`,
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify(trimmedData),
       });
@@ -172,15 +187,16 @@ function Profile() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.detail || "Error al actualizar los datos");
+        toast.error(result.detail || "Error al actualizar los datos");
+        return;
       }
 
-      alert("Datos actualizados correctamente");
+      toast.success("Datos actualizados correctamente");
       setUserData({ ...userData, ...updatedData });
       setShowEditModal(false);
     } catch (error) {
       console.error("Error:", error);
-      alert(error.message);
+      toast.error(error.message);
     }
   };
 

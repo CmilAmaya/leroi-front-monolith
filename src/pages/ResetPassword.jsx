@@ -30,10 +30,11 @@ function ResetPassword() {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/reset-password`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users_authentication_path/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({ token, new_password: newPassword }),
       });

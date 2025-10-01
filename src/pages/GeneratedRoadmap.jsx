@@ -68,6 +68,7 @@ function GeneratedRoadmap() {
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json",
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({ topic: JSON.stringify(roadmapInfo) }),
       });
@@ -211,6 +212,7 @@ function GeneratedRoadmap() {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authToken}`,
+          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({ 
           topic,  
