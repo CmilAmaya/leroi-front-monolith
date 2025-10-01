@@ -114,29 +114,49 @@ function Roadmap() {
   
       const dataToSend = {
         fileName: file.name,
-        fileType: file.type,
+        fileType: file.type, // Revisar este campo
         fileSize: file.size,
         fileBase64: base64Page,
       };
   
-      const token = localStorage.getItem("token");
-      let email = '';
-      if (token) {
+      // const token = localStorage.getItem("token");
+      // let email = '';
+      // if (token) {
+      //   try {
+      //     if (token.split('.').length === 3) {
+      //       const decodedPayload = token.split('.')[1];
+      //       const decoded = atob(decodedPayload);
+      //       const parsed = JSON.parse(decoded);
+      //       email = parsed.sub;
+      //     }
+      //   } catch (error) {
+      //     console.error('Error al decodificar el token:', error);
+      //     toast.error('Error al decodificar el token');
+      //     return;
+      //   }
+      // }
+  
+      function getEmailFromToken(token) {
         try {
-          if (token.split('.').length === 3) {
-            const decodedPayload = token.split('.')[1];
-            const decoded = atob(decodedPayload);
-            const parsed = JSON.parse(decoded);
-            email = parsed.sub;
-          }
-        } catch (error) {
-          console.error('Error al decodificar el token:', error);
-          toast.error('Error al decodificar el token');
-          return;
+          if (!token) return null;
+          const parts = token.split('.');
+          if (parts.length !== 3) return null;
+  
+          // Convertir base64url -> base64 y agregar padding
+          const base64Url = parts[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const padded = base64 + '==='.slice((base64.length + 3) % 4);
+  
+          const payload = JSON.parse(atob(padded));
+          return payload.email || payload.sub || null;
+        } catch {
+          return null;
         }
       }
   
+      const email = getEmailFromToken(authToken);
       if (!email) {
+        console.log("entro a buscar el email");
         toast.error('No se pudo obtener el correo del usuario.');
         return;
       }
@@ -145,6 +165,7 @@ function Roadmap() {
       formData.append("file", file);
       formData.append("email", email);
   
+
       const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/preview-cost-process-file`, {
         method: 'POST',
         headers: {
@@ -157,8 +178,11 @@ function Roadmap() {
   
       const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/analyze`, {
         method: 'POST',
-        headers: { Accept: 'application/json' },
-        body: formData,
+        headers: { 
+          Authorization: `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend),
       });
   
       const previewResponse = await previewPromise;
@@ -167,20 +191,22 @@ function Roadmap() {
       }
   
       const previewResult = await previewResponse.json();
-      const parsePreviewResult = JSON.parse(previewResult);
+      
+      const credits_cost = parseInt(previewResult.data.credits_cost);
+      const user_credits = parseInt(previewResult.data.user_credits);
+      const can_afford = previewResult.data.can_afford;
+      const file_id = previewResult.file_id;
 
-      const file_tokens = parseInt(parsePreviewResult.file_tokens);
+      console.log("Preview Result:", previewResult);
 
-      if (file_tokens >= 1000000) {
-        toast.error('¡El archivo supera nuestras capacidades de procesamiento! Prueba eliminando algunas páginas o imagenes del archivo...');
-        setFileUploaded(null);
-        setPreviewCost("Calculando...");
-        setShowFileInfo(false);
-        return;
-      }
-  
-      const credits_cost = parseInt(parsePreviewResult.credits_cost);
-      const user_credits = parseInt(parsePreviewResult.user_credits);
+
+      // if (file_tokens >= 1000000) {
+      //   toast.error('¡El archivo supera nuestras capacidades de procesamiento! Prueba eliminando algunas páginas o imagenes del archivo...');
+      //   setFileUploaded(null);
+      //   setPreviewCost("Calculando...");
+      //   setShowFileInfo(false);
+      //   return;
+      // }
   
       setPreviewCost("Costo: " + credits_cost.toLocaleString() + " Créditos");
       setUserCredits("Actualmente tienes " + user_credits.toLocaleString() + " créditos");
@@ -194,8 +220,10 @@ function Roadmap() {
       analyzePromise
         .then((analyzeResponse) => {
           return analyzeResponse.json();
+          
         })
         .then((analyzeResult) => {
+          // console.log("Analyze result:", analyzeResult);
           if (analyzeResult.has_virus) {
             toast.error("El archivo contiene virus. El usuario ha sido eliminado.");
           }
