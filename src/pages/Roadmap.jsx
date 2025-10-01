@@ -277,7 +277,7 @@ const handleDrop = (e) => {
       setTopics(result.themes);
   
     } catch (error) {
-      console.error("Error en el proceso:", error);
+      console.error("Error en el proceso de IA:", error);
       toast.error("Error al enviar los datos al backend");
     } finally {
       setIsLoading(false);
@@ -334,7 +334,7 @@ const handleDrop = (e) => {
       setRoadmapTopics(parseResult);    
       setRoadmapInfo(parseSecondResult);
     } catch (error) {
-      console.error('Error al enviar al generar la ruta:', error);
+      console.error('Error al enviar al generar la ruta, es el siguiente:', error);
       toast.error('No pudimos generar tu ruta de aprendizaje 😔');
     }
   };
