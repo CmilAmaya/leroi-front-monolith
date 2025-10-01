@@ -119,23 +119,6 @@ function Roadmap() {
         fileBase64: base64Page,
       };
   
-      // const token = localStorage.getItem("token");
-      // let email = '';
-      // if (token) {
-      //   try {
-      //     if (token.split('.').length === 3) {
-      //       const decodedPayload = token.split('.')[1];
-      //       const decoded = atob(decodedPayload);
-      //       const parsed = JSON.parse(decoded);
-      //       email = parsed.sub;
-      //     }
-      //   } catch (error) {
-      //     console.error('Error al decodificar el token:', error);
-      //     toast.error('Error al decodificar el token');
-      //     return;
-      //   }
-      // }
-  
       function getEmailFromToken(token) {
         try {
           if (!token) return null;
