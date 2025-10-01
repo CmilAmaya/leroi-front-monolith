@@ -114,7 +114,7 @@ function Roadmap() {
   
       const dataToSend = {
         fileName: file.name,
-        fileType: file.type, // Revisar este campo
+        fileType: file.type, 
         fileSize: file.size,
         fileBase64: base64Page,
       };
