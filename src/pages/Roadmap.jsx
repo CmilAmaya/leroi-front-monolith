@@ -256,7 +256,7 @@ const handleDrop = (e) => {
     };
   
     try {
-      const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/documents`, {
+      const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/documents`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -291,7 +291,7 @@ const handleDrop = (e) => {
     setLoadingPage(true);
     setLoadingText("Estamos creando tu ruta de aprendizaje 😁");
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/roadmaps`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/roadmaps`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
