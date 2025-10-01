@@ -70,7 +70,8 @@ function PaymentSuccess() {
                     </button>
                 </div>
 
-                {/* Información adicional */}
+                {/* Información adicional del pago */}
+                
                 <div className="info-note">
                     <p>
                         <strong>¡Gracias por confiar en nosotros!</strong> Tu transacción se completó de forma segura. 

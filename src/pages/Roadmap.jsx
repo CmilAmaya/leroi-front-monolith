@@ -27,6 +27,7 @@ function Roadmap() {
   const [roadmapTopics, setRoadmapTopics] = useState({});
   const [roadmapInfo, setRoadmapInfo] = useState({});
   const [relatedTopics, setRelatedTopics] = useState([]);
+  const [isDragging, setIsDragging] = useState(false);
   const authToken = localStorage.getItem("token");
 
   const convertToBase64 = (file) => {
@@ -114,27 +115,10 @@ function Roadmap() {
   
       const dataToSend = {
         fileName: file.name,
-        fileType: file.type, // Revisar este campo
+        fileType: file.type, 
         fileSize: file.size,
         fileBase64: base64Page,
       };
-  
-      // const token = localStorage.getItem("token");
-      // let email = '';
-      // if (token) {
-      //   try {
-      //     if (token.split('.').length === 3) {
-      //       const decodedPayload = token.split('.')[1];
-      //       const decoded = atob(decodedPayload);
-      //       const parsed = JSON.parse(decoded);
-      //       email = parsed.sub;
-      //     }
-      //   } catch (error) {
-      //     console.error('Error al decodificar el token:', error);
-      //     toast.error('Error al decodificar el token');
-      //     return;
-      //   }
-      // }
   
       function getEmailFromToken(token) {
         try {
@@ -166,7 +150,7 @@ function Roadmap() {
       formData.append("email", email);
   
 
-      const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/preview-cost-process-file`, {
+      /*const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/cost-estimates`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -175,8 +159,19 @@ function Roadmap() {
         },
         body: JSON.stringify(dataToSend),
       });
+
+      const previewResponse = await previewPromise;
+      if (!previewResponse.ok) {
+        throw new Error('Error al obtener la vista previa de costos');
+      }
+
+      const previewResult = await previewResponse.json();*/
+      
+      const credits_cost = 1;
+      const user_credits = 100;
+
   
-      const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/analyze`, {
+      const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/analyses`, {
         method: 'POST',
         headers: { 
           Authorization: `Bearer ${authToken}`,
@@ -184,29 +179,6 @@ function Roadmap() {
         },
         body: JSON.stringify(dataToSend),
       });
-  
-      const previewResponse = await previewPromise;
-      if (!previewResponse.ok) {
-        throw new Error('Error al obtener la vista previa de costos');
-      }
-  
-      const previewResult = await previewResponse.json();
-      
-      const credits_cost = parseInt(previewResult.data.credits_cost);
-      const user_credits = parseInt(previewResult.data.user_credits);
-      const can_afford = previewResult.data.can_afford;
-      const file_id = previewResult.file_id;
-
-      console.log("Preview Result:", previewResult);
-
-
-      // if (file_tokens >= 1000000) {
-      //   toast.error('¡El archivo supera nuestras capacidades de procesamiento! Prueba eliminando algunas páginas o imagenes del archivo...');
-      //   setFileUploaded(null);
-      //   setPreviewCost("Calculando...");
-      //   setShowFileInfo(false);
-      //   return;
-      // }
   
       setPreviewCost("Costo: " + credits_cost.toLocaleString() + " Créditos");
       setUserCredits("Actualmente tienes " + user_credits.toLocaleString() + " créditos");
@@ -241,8 +213,6 @@ function Roadmap() {
     }
   };
 
-/*Interaccion al subir un documento*/
-const [isDragging, setIsDragging] = useState(false);
 
 const handleDragOver = (e) => {
   e.preventDefault();
@@ -275,6 +245,8 @@ const handleDrop = (e) => {
   
     setLoadingPage(true);
     setLoadingText("Buscando temas relacionados... 📈🧠📚");
+    console.log("🚀 URL que está usando:", import.meta.env.VITE_BACKEND_URL_LEARNING);
+
   
     const dataToSend = {
       fileName: fileUploaded.name,
@@ -284,7 +256,7 @@ const handleDrop = (e) => {
     };
   
     try {
-      const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/documents`, {
+      const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/documents`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -299,10 +271,10 @@ const handleDrop = (e) => {
         const errorData = processResponse.json();
         throw new Error(errorData.detail);
       }
-  
+      console.log("ESTO DIJO LA IA", processResponse);
       const result = await processResponse.json();
-      const parseResult = JSON.parse(result);
-      setTopics(parseResult.themes);
+      console.log("RESULTADO JSON:", result); 
+      setTopics(result.themes);
   
     } catch (error) {
       console.error("Error en el proceso:", error);
@@ -319,7 +291,7 @@ const handleDrop = (e) => {
     setLoadingPage(true);
     setLoadingText("Estamos creando tu ruta de aprendizaje 😁");
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/roadmaps`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/roadmaps`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -339,10 +311,11 @@ const handleDrop = (e) => {
       const parseSecondResult = JSON.parse(result.extra_info)
       console.log("VAMO A VERRRR", parseSecondResult);
 
-      const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL}/related-topics`, {
+      const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/related-topics`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`,
           'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({ topic }),
