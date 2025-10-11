@@ -100,7 +100,7 @@ function Login() {
           localStorage.setItem("userEmail", formData.email);
           localStorage.setItem('token', token);
           navigate('/roadmap');
-          //window.location.reload('/roadmap');
+          window.location.reload('/roadmap');
         }
 
       } catch (error) {
@@ -117,7 +117,7 @@ function Login() {
     try {
       setIsSubmittingCode(true);
   
-      const verifyCodeResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users_authentication_path/verify-code`, {
+      const verifyCodeResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users_authentication_path/verify-2fa-code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
