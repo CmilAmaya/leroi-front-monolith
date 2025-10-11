@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/paymentfailure.css';
+import '../styles/pricing.css';
 
 function PaymentFailure() {
     const handleRetryPayment = () => {
@@ -11,61 +11,49 @@ function PaymentFailure() {
     };
 
     return (
-        <div className="payment-failure-container">
-            <div className="payment-failure-card">
+        <div className="pricing-container-p">
+            <div className="pricing-box-p">
                 {/* Icono de error */}
                 <div className="error-icon">
-                    <div style={{
-                        width: '80px',
-                        height: '80px',
-                        background: '#ff6b6b',
-                        borderRadius: '50%',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        fontSize: '40px',
-                        fontWeight: 'bold'
-                    }}>
+                    <div className="error-circle">
                         !
                     </div>
                 </div>
 
                 {/* Título y mensaje principal */}
-                <h1 className="failure-title">
+                <h1 className="pricing-title-p">
                     ¡Oops! Algo salió mal
                 </h1>
                 
-                <p className="failure-message">
-                    Tu pago no pudo ser procesado
-                </p>
-                
-                <p className="failure-details">
-                    Hubo un problema al procesar tu transacción. Por favor, intenta nuevamente.
-                </p>
+                <h2 className="failure-details">
+                    Tu pago no pudo ser procesado.
+                    <br></br>
+                </h2>
 
                 {/* Botones de acción */}
-                <div className="action-buttons">
+                <div className="button-container">
                     <button 
                         onClick={handleRetryPayment}
-                        className="btn btn-primary"
+                        className="submit-button"
                     >
                         Intentar de nuevo
                     </button>
+                </div>
 
+                <div className="button-container">
                     <button 
                         onClick={handleGoHome}
-                        className="btn btn-outline"
+                        className="submit-button"
                     >
                         Ir al inicio
                     </button>
                 </div>
 
-                {/* Información de seguridad */}
-                <div className="security-note">
+                {/* Información adicional */}
+                <div className="info-note">
                     <p>
-                        <strong>Tranquilo:</strong> No se realizó ningún cargo a tu cuenta. 
-                        Tu información está segura y puedes intentar nuevamente.
+                        <strong>No se realizó ningún cargo a tu cuenta. </strong><br></br>  
+                        Por favor, intenta nuevamente.
                     </p>
                 </div>
 

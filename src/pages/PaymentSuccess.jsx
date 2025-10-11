@@ -1,5 +1,5 @@
-import React from 'react';
-import '../styles/paymentsuccess.css';
+import { useState, useEffect } from 'react';
+import '../styles/pricing.css';
 
 function PaymentSuccess() {
     const handleViewProfile = () => {
@@ -15,8 +15,8 @@ function PaymentSuccess() {
     };
 
     return (
-        <div className="payment-success-container">
-            <div className="payment-success-card">
+        <div className="pricing-container-p">
+            <div className="pricing-box-p">
                 {/* Icono de éxito */}
                 <div className="success-icon">
                     <div className="checkmark-circle">
@@ -25,56 +25,47 @@ function PaymentSuccess() {
                 </div>
 
                 {/* Título y mensaje principal */}
-                <h1 className="success-title">
-                    ¡Pago Exitoso! 🎉
+                <h1 className="pricing-title-p">
+                    ¡Pago Exitoso! 
                 </h1>
                 
-                <p className="success-message">
-                    Tu compra se procesó correctamente
-                </p>
-                
-                <p className="success-details">
-                    Tus créditos han sido añadidos a tu cuenta. ¡Ya puedes crear tus roadmaps personalizados!
-                </p>
-
-                {/* Información de créditos */}
-                <div className="credits-info-box">
-                    <h3>Compra Exitosa</h3>
-                    <div className="success-checkmark">
-                        ✅
-                    </div>
-                    <p>Tu compra se ha realizado satisfactoriamente. Los créditos correspondientes han sido añadidos a tu cuenta.</p>
-                </div>
+                <h2 className="success-details">
+                    Tus créditos han sido añadidos a tu cuenta.
+                    <br></br>
+                </h2>
 
                 {/* Botones de acción */}
-                <div className="action-buttons">
+                <div className="button-container">
                     <button 
                         onClick={handleCreateRoadmap}
-                        className="btn btn-primary"
+                        className="submit-button"
                     >
-                        Crear mi primer roadmap
+                        Crear un roadmap
                     </button>
+                </div>
 
+                <div className="button-container">
                     <button 
                         onClick={handleViewProfile}
-                        className="btn btn-secondary"
+                        className="submit-button"
                     >
                         Ver mi perfil
                     </button>
+                </div>
 
+                <div className="button-container">
                     <button 
                         onClick={handleGoHome}
-                        className="btn btn-outline"
+                        className="submit-button"
                     >
                         Ir al inicio
                     </button>
                 </div>
 
-                {/* Información adicional del pago */}
-                
+                {/* Información adicional */}
                 <div className="info-note">
                     <p>
-                        <strong>¡Gracias por confiar en nosotros!</strong> Tu transacción se completó de forma segura. 
+                        <strong>Tu transacción se completó de forma segura. </strong>  
                         Recibirás un email de confirmación en los próximos minutos.
                     </p>
                 </div>

@@ -1,372 +1,283 @@
-/* Contenedor principal */
+/* Estilos para la página de perfil */
+:root {
+  --icon-color-primary: #835bfc;
+  --icon-color-white: white;
+  --icon-size-small: 16px;
+  --icon-size-medium: 20px;
+  --icon-size-large: 24px;
+  --icon-size-xlarge: 40px;
+}
 .profile-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: var(--background);
-  padding: 20px;
-  overflow: hidden;
-  position: relative;
-}
-
-/* Título de la página */
-.profile-title {
-  color: #fff;
-  font-size: 24px;
-  margin-bottom: 20px;
-  text-align: center;
-  opacity: 0.9;
-  margin-top: 2.8rem !important;
-}
-
-/* Caja de perfil */
-.profile-box {
-  background: rgba(30, 31, 38, 0.95);
-  border-radius: 16px;
-  padding: 30px;
-  width: 100%;
-  max-width: 600px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(4px);
+  max-width: 1200px;
+  margin: 0 auto;
   position: relative;
   z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  margin-top: 6rem;
 }
 
-/* Imagen de perfil */
-.profile-image {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
+.profile-card {
+  background: rgba(30, 31, 38, 0.95);
+  backdrop-filter: blur(4px);
+  border-radius: 16px;
+  border: 1px solid rgba(131, 91, 252, 0.3);
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
-.profile-image svg {
-  height: 120px;
-  width: 120px;
-  color: white;
+.profile-header {
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
-/* Campos de información del perfil */
-.profile-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.profile-field {
-  font-size: 16px;
-  color: #fff;
-  display: flex;
-  justify-content: space-between;
-}
-
-.profile-field strong {
+.profile-title {
+  font-size: 2.5rem;
   font-weight: bold;
-  margin-right: 10px;
-}
-
-/* Botones en la parte inferior */
-.profile-footer {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-/* Botón de modificar datos */
-.edit-button {
-  background: var(--hover);
   color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  margin-bottom: 0.5rem;
 }
 
-.edit-button:hover {
-  background: var(--button-hover);
-}
-
-.edit-button:active {
-  background: #5137b0;
-}
-
-/* Botón de eliminar cuenta */
-.delete-button {
-  background: #ff4d4d;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.delete-button:hover {
-  background: #e60000;
-}
-
-.delete-button:active {
-  background: #cc0000;
-}
-
-/* Sección de Roadmaps */
-/* Contenedor de la sección de roadmaps */
-.roadmaps-section {
-  margin-top: 80px; /* Ajusta este valor según la altura de tu barra de navegación */
-  padding: 20px;
-  width: 100%;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Título de la sección */
-.roadmaps-section h3 {
-  color: #fff;
-  font-size: 24px;
-  margin-bottom: 20px;
-  text-align: center;
-  opacity: 0.9;
-}
-
-/* Grid de roadmaps */
-.roadmaps-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 10px;
-}
-
-/* Tarjeta de roadmap */
-.roadmap-card {
-  position: relative;
-  background: rgba(40, 41, 49, 0.95);
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 15px;
-}
-
-.roadmap-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
-}
-
-/* Encabezado de la tarjeta */
-.roadmap-card-header {
-  padding: 10px;
-  background: rgba(50, 51, 59, 0.95);
-  color: #fff;
-  text-align: center;
-  font-weight: bold;
-  width: 100%;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Cuerpo de la tarjeta */
-.roadmap-card-body {
-  padding: 10px;
-  text-align: center;
-  color: #ddd;
-  font-size: 14px;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-/* Imagen dentro de la tarjeta */
-.roadmap-image {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
-/* Texto de fecha */
-.roadmap-card-body p {
-  margin: 0;
-  font-size: 12px;
-  color: #aaa;
-}
-
-/* Mensaje cuando no hay roadmaps */
-.roadmaps-section p {
-  color: #ddd;
-  text-align: center;
-  font-size: 16px;
-  margin-top: 20px;
-}
-
-.loading-container {
+.profile-avatar-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: calc(100vh - 80px); /* Resta la altura de la barra de navegación */
-  width: 100%;
+  margin-bottom: 2rem;
 }
 
-.loading-message {
-  font-size: 1.5rem;
-  color: #fff;
-}
-.delete-icon-container {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  background: #835bfc;
   border-radius: 50%;
-  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-.delete-icon-container:hover {
-  background-color: rgba(255, 0, 0, 0.8); /* Fondo rojo al hacer hover */
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
 }
 
-.delete-icon {
-  color: #ff0000; /* Color rojo para el icono */
-  font-size: 18px;
-  transition: color 0.3s ease;
+.profile-info-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(131, 91, 252, 0.2);
 }
 
-.delete-icon-container:hover .delete-icon {
-  color: #ffffff; /* Color blanco al hacer hover */
+.info-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
+.info-card-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+}
 
-/* Estilo base para el botón "Ver Roadmaps" */
-.roadmap-button {
-  background-color: var(--hover);
+.info-field {
+  margin-bottom: 1rem;
+}
+
+.info-field:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
   color: white;
+  font-weight: bold;
+}
+
+.info-value {
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0.25rem 0;
+}
+
+.credits-value {
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.roadmaps-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.roadmaps-count {
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.view-roadmaps-btn {
+  width: 100%;
+  margin-top: 0.75rem;
+  background: #835bfc !important;
+  color: white !important;
   border: none;
   border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  padding: 0.75rem 1rem;
+}
+
+.security-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.security-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+}
+
+.security-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(131, 91, 252, 0.2);
+}
+
+.security-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.toggle-info h4 {
+  color: white;
+  font-weight: 600;
+  margin: 0;
+}
+
+.toggle-info p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin: 0.25rem 0 0 0;
+}
+
+.toggle-switch {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin-left: 10px; /* Espacio entre el texto y el botón */
+  cursor: pointer;
 }
 
-
-.roadmap-button:hover {
-  background-color: var(--button-hover) 
-}
-
-
-.roadmap-button:disabled {
-  background-color: #ccc; 
-  color: white;
-  cursor: not-allowed;
-}
-
-/* Estilo para el icono dentro del botón */
-.roadmap-button .icon {
-  width: 16px;
-  height: 16px;
-}
-
-
-/*responsive roadmaps Generados */
-
-/* Estilos responsivos */
-@media (max-width: 768px) {
-  .roadmaps-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  }
-
-  .roadmap-card-header strong {
-    font-size: 16px;
-  }
-
-  .roadmap-card-body p {
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .roadmaps-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .roadmap-card-header strong {
-    font-size: 14px;
-  }
-
-  .roadmap-card-body p {
-    font-size: 12px;
-  }
-}
-/* Estilos para el contenedor de búsqueda */
-.search-container {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  position: relative;
-  max-width: 400px; 
-  width: 100%;
-  margin-left: auto;
-}
-
-.search-input {
-  width: 100%;
-  padding: 10px 40px 10px 15px; 
-  font-size: 16px;
-  border: 2px solid #ccc;
-  border-radius: 25px; 
-  outline: none;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
-}
-
-.search-input:hover,
-.search-input:focus {
-  border-color: var(--hover); 
-  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2); 
-}
-
-/* Estilo del ícono de lupa */
-.search-icon {
+.toggle-input {
+  opacity: 0;
   position: absolute;
-  right: 15px;
-  color: #777; 
-  font-size: 18px;
-  pointer-events: none; 
-}
-.search-icon:hover {
-  color: var(--hover); 
 }
 
-/* Estilos para el contenedor principal */
-.roadmaps-section {
+.toggle-slider {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.toggle-slider.active {
+  background: #8b5cf6;
+}
+
+.toggle-slider.inactive {
+  background: #4b5563;
+}
+
+.toggle-knob {
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  transition: all 0.3s ease;
+}
+
+.toggle-knob.active {
+  left: 22px;
+}
+
+.toggle-knob.inactive {
+  left: 2px;
+}
+
+.actions-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 1.5rem;
+}
+
+.actions-container {
   display: flex;
   flex-direction: column;
-  gap: 20px; 
+  gap: 1rem;
 }
 
-.roadmaps-section h3 {
-  margin: 0; 
+.edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #835bfc;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.delete-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #dc2626;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+/* Estilos para iconos */
+.profile-avatar svg {
+  width: var(--icon-size-xlarge);
+  height: var(--icon-size-xlarge);
+  color: var(--icon-color-white);
+}
+
+.info-card-header svg {
+  width: var(--icon-size-medium);
+  height: var(--icon-size-medium);
+  color: var(--icon-color-primary);
+}
+
+.security-header svg {
+  width: var(--icon-size-large);
+  height: var(--icon-size-large);
+  color: var(--icon-color-primary);
+}
+
+.edit-btn svg,
+.delete-btn svg {
+  width: var(--icon-size-small);
+  height: var(--icon-size-small);
 }

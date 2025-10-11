@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import archivo from '../assets/archivo.png';
 import anim_tutorial from '../assets/Tutorial_CrearRoadmap.mp4';
@@ -6,6 +6,33 @@ import tutorial_logo from '../assets/Tutorial_logo.png';
 import { toast } from 'react-hot-toast';
 import { PDFDocument } from 'pdf-lib';
 import '../styles/roadmap.css';
+
+// Función helper fuera del componente
+const getEmailFromToken = (token) => {
+  try {
+    if (!token) return null;
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+
+    const base64Url = parts[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64 + '==='.slice((base64.length + 3) % 4);
+
+    const payload = JSON.parse(atob(padded));
+    return payload.email || payload.sub || null;
+  } catch {
+    return null;
+  }
+};
+
+const convertToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+  });
+};
 
 function Roadmap() {
   const location = useLocation();
@@ -17,6 +44,7 @@ function Roadmap() {
   const [base64, setBase64] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showFileInfo, setShowFileInfo] = useState(false);
+  const [userData, setUserData] = useState(null);
   const [userCredits, setUserCredits] = useState(null);
   const [previewCost, setPreviewCost] = useState("Calculando...");
   const [CanUserPay, setCanUserPay] = useState(true);
@@ -29,19 +57,67 @@ function Roadmap() {
   const [relatedTopics, setRelatedTopics] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const authToken = localStorage.getItem("token");
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  const convertToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = () => {
-        resolve(reader.result);
-      };
-      reader.onerror = (error) => {
-        reject(error);
-      };
-    });
-  };
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!authToken) {
+        navigate('/login');
+        return;
+      }
+
+      try {
+        const userResponse = await fetch(`${backendUrl}/users_authentication_path/user-profile`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "application/json",
+            'x-api-key': import.meta.env.VITE_API_KEY
+          },
+        });
+
+        if (!userResponse.ok) {
+          throw new Error("Error al obtener los datos del usuario");
+        }
+
+        const userData = await userResponse.json();
+        setUserData(userData.data);
+      } catch (error) {
+        console.error(error);
+        navigate('/login');
+      }
+    };
+
+    fetchUserData();
+  }, [backendUrl, authToken, navigate]);
+
+  const updateUserCredits = useCallback(async (amount) => {
+    try {
+      const response = await fetch(`${backendUrl}/users_authentication_path/user-credits/${encodeURIComponent(userData.email)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`,
+          'x-api-key': import.meta.env.VITE_API_KEY
+        },
+        body: JSON.stringify({ amount }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar créditos');
+      }
+
+      setUserData(prev => ({
+        ...prev,
+        credits: prev.credits + amount
+      }));
+
+      return true;
+    } catch (error) {
+      console.error('Error al actualizar créditos:', error);
+      return false;
+    }
+  }, [backendUrl, userData?.email, authToken]);
 
   useEffect(() => {
     if (base64) {
@@ -91,14 +167,17 @@ function Roadmap() {
     if (file.size > maxSize) {
       toast.error('¡El archivo supera nuestras capacidades de procesamiento! Prueba eliminando algunas páginas o imagenes del archivo...');
       return;
-    } else {
-      setFileUploaded(file);
-      convertToBase64(file);
     }
 
+    if (!userData) {
+      toast.error('Cargando datos del usuario...');
+      return;
+    }
+
+    setFileUploaded(file);
+    convertToBase64(file);
     setLoadingPage(true);
     setLoadingText("Cargando documento 🧐");
-    setFileUploaded(file);
   
     try {
       const base64String = await convertToBase64(file);
@@ -120,34 +199,18 @@ function Roadmap() {
         fileBase64: base64Page,
       };
   
-      function getEmailFromToken(token) {
-        try {
-          if (!token) return null;
-          const parts = token.split('.');
-          if (parts.length !== 3) return null;
-  
-          // Convertir base64url -> base64 y agregar padding
-          const base64Url = parts[1];
-          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-          const padded = base64 + '==='.slice((base64.length + 3) % 4);
-  
-          const payload = JSON.parse(atob(padded));
-          return payload.email || payload.sub || null;
-        } catch {
-          return null;
-        }
-      }
+
   
       const email = getEmailFromToken(authToken);
       if (!email) {
         console.log("entro a buscar el email");
         toast.error('No se pudo obtener el correo del usuario.');
+        setLoadingPage(false);
+        setLoadingText("");
         return;
       }
   
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("email", email);
+
   
 
       /*const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/cost-estimates`, {
@@ -168,7 +231,7 @@ function Roadmap() {
       const previewResult = await previewResponse.json();*/
       
       const credits_cost = 1;
-      const user_credits = 100;
+      const user_credits = userData?.credits || 0;
 
   
       const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/analyses`, {
@@ -256,7 +319,7 @@ const handleDrop = (e) => {
     };
   
     try {
-      const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/documents`, {
+      const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/documents`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -268,8 +331,7 @@ const handleDrop = (e) => {
   
       if (!processResponse.ok) {
         toast.error("No puedes generar rutas de aprendizaje de temas sensibles");
-        const errorData = processResponse.json();
-        throw new Error(errorData.detail);
+        throw new Error('Error en la respuesta del servidor');
       }
       console.log("ESTO DIJO LA IA", processResponse);
       const result = await processResponse.json();
@@ -286,12 +348,23 @@ const handleDrop = (e) => {
     }
   };
 
+
+
   const handleSelectedTopic = async(topic) => {  
     setTopicsModal(false);
     setLoadingPage(true);
     setLoadingText("Estamos creando tu ruta de aprendizaje 😁");
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/roadmaps`, {
+      // Descontar 1 crédito antes de generar el roadmap
+      const creditsUpdated = await updateUserCredits(-1);
+      if (!creditsUpdated) {
+        toast.error('Error al procesar el pago de créditos');
+        setLoadingPage(false);
+        setLoadingText("");
+        return;
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/roadmaps`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -302,6 +375,8 @@ const handleDrop = (e) => {
       });
   
       if (!response.ok) {
+        // Si falla la generación del roadmap, devolver el crédito
+        await updateUserCredits(1);
         throw new Error('Error al enviar el topic al backend');
       }
       
@@ -311,7 +386,7 @@ const handleDrop = (e) => {
       const parseSecondResult = JSON.parse(result.extra_info)
       console.log("VAMO A VERRRR", parseSecondResult);
 
-      /*const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/related-topics`, {
+      /*const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/related-topics`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -336,6 +411,8 @@ const handleDrop = (e) => {
     } catch (error) {
       console.error('Error al enviar al generar la ruta, es el siguiente:', error);
       toast.error('No pudimos generar tu ruta de aprendizaje 😔');
+      setLoadingPage(false);
+      setLoadingText("");
     }
   };
 
