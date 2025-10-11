@@ -61,6 +61,7 @@
 
 .terms-group {
     margin-top: 24px;
+    margin-bottom: 24px;
     text-align: justify;
 }
 
@@ -81,27 +82,19 @@
     text-decoration: underline;
 }
 
-.purchase-button {
-    font-family: 'Lexend Deca', sans-serif;
-    width: 100%;
-    padding: 1rem;
-    background: #835bfc;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    font-size: 1rem;
+
+
+
+
+.button-container {
+    margin-bottom: 14px;
 }
 
-.purchase-button:hover {
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+.button-container:last-child {
+    margin-bottom: 28px;
 }
 
-.purchase-button:disabled {
-    background: #666;
-    cursor: not-allowed;
-}
+
 
 /* Selección de cantidad de creditos */
 
@@ -148,26 +141,7 @@
 
 
 
-.terms-group {
-    margin-bottom: 24px;
-}
 
-.terms-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #fff;
-    font-size: 14px;
-}
-
-.terms-link {
-    color: #6366f1;
-    text-decoration: none;
-}
-
-.terms-link:hover {
-    text-decoration: underline;
-}
 
 
 /* Modal de verificación */
@@ -208,4 +182,75 @@
     color: #835bfc;
     font-weight: 500;
     margin-bottom: 1.5rem;
+}
+
+/* Payment Success & Failure Styles */
+.success-icon, .error-icon {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.checkmark-circle, .error-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    margin: 0 auto;
+}
+
+.checkmark-circle {
+    background: #835bfc;
+    box-shadow: 0 0 20px rgba(131, 91, 252, 0.3);
+}
+
+.error-circle {
+    background: #ff6b6b;
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+}
+
+.success-details, .failure-details {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 16px;
+    margin-bottom: 28px;
+    text-align: center;
+    font-weight: 400;
+}
+
+.info-note {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.info-note p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.info-note strong {
+    font-weight: 600;
+    color: #835bfc;
+}
+
+
+
+.timestamp {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 16px;
+    text-align: center;
+}
+
+.timestamp small {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
 }

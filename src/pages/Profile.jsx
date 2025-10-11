@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { toast } from 'react-hot-toast';
-import { User } from "lucide-react";
+import { User, CreditCard, MapPin, Shield, Edit3, Trash2 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import ConfirmModal from "../components/Modal";
 import EditModal from "../components/EditModal";
-import "../styles/profile.css";
-import "../styles/modal.css";
-import "../styles/editmodal.css";
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
+import '../styles/register.css';
+import '../styles/profile.css'; 
 
 
 function Profile() {
@@ -206,72 +205,126 @@ function Profile() {
   }
 
   return (
-    <div className="profile-container">
+    <div className="register-container">
       <div className="light-orb"></div>
       <div className="light-orb"></div>
       <div className="light-orb"></div>
       <div className="light-orb"></div>
       <div className="light-orb"></div>
+      <div className="profile-container">
+        {/* Información Personal */}
+        <div className="profile-card">
+          <div className="profile-header">
+            <h1 className="profile-title">Mi perfil</h1>
+          </div>
+          <div className="profile-avatar-container">
+            <div className="profile-avatar">
+              <User />
+            </div>
+          </div>
 
-      <h2 className="profile-title">Perfil de Usuario</h2>
+          <div className="profile-grid">
+            <div className="profile-info-card">
+              <div className="info-card-header">
+                <User />
+                <span className="info-card-title">Información Personal</span>
+              </div>
+              <div className="info-field">
+                <strong className="info-label">Nombre:</strong>
+                <p className="info-value">{userData.firstName}</p>
+              </div>
+              <div className="info-field">
+                <strong className="info-label">Apellido:</strong>
+                <p className="info-value">{userData.lastName}</p>
+              </div>
+              <div className="info-field">
+                <strong className="info-label">Correo electrónico:</strong>
+                <p className="info-value">{userData.email}</p>
+              </div>
+            </div>
 
-      <div className="profile-box">
-        <div className="profile-image">
-          <User />
+            <div className="profile-info-card">
+              <div className="info-card-header">
+                <CreditCard />
+                <span className="info-card-title">Saldo de Créditos</span>
+              </div>
+              <p className="credits-value">
+                ${userData.credits}
+              </p>
+            </div>
+
+            <div className="profile-info-card">
+              <div className="roadmaps-header">
+                <div className="info-card-header">
+                  <MapPin />
+                  <span className="info-card-title">Roadmaps Creados</span>
+                </div>
+                <span className="roadmaps-count">
+                  {userData.roadmapsCreated}
+                </span>
+              </div>
+              {userData.roadmapsCreated > 0 && (
+                <Button 
+                  className="view-roadmaps-btn"
+                  size="sm" 
+                  onClick={() => navigate("/roadmapsCreados")}
+                >
+                  Ver Roadmaps
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
 
-        <div className="profile-fields">
-          <div className="profile-field">
-            <strong>Nombre:</strong> {userData.firstName}
+        {/* Configuración de Seguridad */}
+        <div className="profile-card">
+          <div className="security-header">
+            <Shield />
+            <h3 className="security-title">Configuración de Seguridad</h3>
           </div>
-          <div className="profile-field">
-            <strong>Apellido:</strong> {userData.lastName}
-          </div>
-          <div className="profile-field">
-            <strong>Email:</strong> {userData.email}
-          </div>
-          <div className="profile-field">
-            <strong>Saldo de Créditos:</strong> ${userData.credits}
-          </div>
-          <div className="profile-field">
-            <strong>Roadmaps Creados:</strong> {userData.roadmapsCreated}
-            {userData.roadmapsCreated > 0 && (
-              <Button 
-                className="roadmap-button" 
-                size="sm" 
-                onClick={() => navigate("/roadmapsCreados")}
-              >
-                Ver Roadmaps
-              </Button>
-            )}
-          </div>
-          <div className="profile-field">
-            <label>
-              <input
-                type="checkbox"
-                checked={userData.TFA_enabled || false}
-                onChange={handleToggle2FA}
-              />
-              Activar Autenticación de Doble Factor
-            </label>
+          
+          <div className="security-card">
+            <div className="security-toggle">
+              <div className="toggle-info">
+                <h4>Autenticación de Doble Factor</h4>
+                <p>Añade una capa extra de seguridad a tu cuenta</p>
+              </div>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  className="toggle-input"
+                  checked={userData.TFA_enabled || false}
+                  onChange={handleToggle2FA}
+                />
+                <div className={`toggle-slider ${userData.TFA_enabled ? 'active' : 'inactive'}`}>
+                  <div className={`toggle-knob ${userData.TFA_enabled ? 'active' : 'inactive'}`}></div>
+                </div>
+              </label>
+            </div>
           </div>
         </div>
 
-        <div className="profile-footer">
-          <Button
-            className="edit-button"
-            size="sm"
-            onClick={() => setShowEditModal(true)}
-          >
-            Modificar datos
-          </Button>
-          <Button
-            className="delete-button"
-            size="sm"
-            onClick={handleDeleteAccount}
-          >
-            Borrar cuenta
-          </Button>
+        {/* Acciones de Cuenta */}
+        <div className="profile-card">
+          <h3 className="actions-title">Acciones de Cuenta</h3>
+          
+          <div className="actions-container">
+            <Button
+              className="edit-btn"
+              onClick={() => setShowEditModal(true)}
+            >
+              <Edit3 />
+              Modificar datos
+            </Button>
+            
+            <Button
+              className="delete-btn"
+              onClick={handleDeleteAccount}
+            >
+              <Trash2 />
+              Borrar cuenta
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -293,9 +346,7 @@ function Profile() {
 
       {show2FAModal && (
         <ConfirmModal
-          message={`¿Estás seguro de que deseas ${
-            new2FAStatus ? "activar" : "desactivar"
-          } la autenticación de doble factor?`}
+          message={`¿Estás seguro de que deseas ${new2FAStatus ? "activar" : "desactivar"} la autenticación de doble factor?`}
           onConfirm={confirmToggle2FA}
           onCancel={cancelToggle2FA}
         />

@@ -62,3 +62,76 @@
   .modal-button.cancel:hover {
     background: #6b4ad4;
   }
+
+  /* Estilos para el formulario de edición */
+  .modal-box h2 {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .form-field {
+    margin-bottom: 1rem;
+    text-align: left;
+  }
+
+  .form-field label {
+    display: block;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-field input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid rgba(131, 91, 252, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .form-field input:focus {
+    outline: none;
+    border-color: #835bfc;
+    box-shadow: 0 0 0 2px rgba(131, 91, 252, 0.2);
+  }
+
+  .form-field input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Estilos para los botones del modal */
+  .modal-buttons button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+  }
+
+  .modal-buttons button[type="submit"] {
+    background: #835bfc;
+    color: white;
+  }
+
+  .modal-buttons button[type="submit"]:hover {
+    background: #6b4ad4;
+  }
+
+  .modal-buttons button.cancel {
+    background: #6b7280;
+    color: white;
+  }
+
+  .modal-buttons button.cancel:hover {
+    background: #4b5563;
+  }
