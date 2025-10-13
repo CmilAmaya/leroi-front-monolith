@@ -184,7 +184,7 @@ function Roadmap() {
       formData.append("email", email);
   
 
-      /*const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/cost-estimates`, {
+      const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_PREPROCESSING}/files/cost-estimates`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -199,9 +199,9 @@ function Roadmap() {
         throw new Error('Error al obtener la vista previa de costos');
       }
 
-      const previewResult = await previewResponse.json();*/
+      const previewResult = await previewResponse.json();
       
-      const credits_cost = 1;
+      const credits_cost = previewResult.credits_cost || 1;
       const user_credits = userData?.credits || 0;
 
   
