@@ -201,10 +201,9 @@ function Roadmap() {
         throw new Error('Error al obtener la vista previa de costos');
       }
 
+  
       const previewResult = await previewResponse.json();
-      const previewResult = await previewResponse.json();
-      
-      const credits_cost = previewResult.credits_cost || 1;
+
       const credits_cost = previewResult.credits_cost || 1;
       const user_credits = userData?.credits || 0;
 
