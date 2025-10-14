@@ -29,6 +29,10 @@ function Roadmap() {
   const [relatedTopics, setRelatedTopics] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [userData, setUserData] = useState(null);
+
+  // NUEVO: Estado global para almacenar dataToSend
+  const [fileData, setFileData] = useState(null);
+
   const authToken = localStorage.getItem("token");
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -153,6 +157,10 @@ function Roadmap() {
         fileSize: file.size,
         fileBase64: base64Page,
       };
+
+      setFileData(dataToSend); // Guardar en estado global
+      console.log("📦 Datos del archivo guardados:", dataToSend);
+  
   
       function getEmailFromToken(token) {
         try {
@@ -286,16 +294,12 @@ const handleDrop = (e) => {
     setLoadingPage(true);
     setLoadingText("Buscando temas relacionados... 📈🧠📚");
     console.log("🚀 URL que está usando:", import.meta.env.VITE_BACKEND_URL);
-
+    console.log("📦 Datos a enviar:", fileData);
   
-    const dataToSend = {
-      fileName: fileUploaded.name,
-      fileType: fileUploaded.type,
-      fileSize: fileUploaded.size,
-      fileBase64: base64,
-    };
+   
   
     try {
+
       const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/documents`, {
         method: "POST",
         headers: {
@@ -303,7 +307,7 @@ const handleDrop = (e) => {
           "Content-Type": "application/json",
           'x-api-key': import.meta.env.VITE_API_KEY
         },
-        body: JSON.stringify(dataToSend),
+        body: JSON.stringify(fileData),
       });
   
       if (!processResponse.ok) {
