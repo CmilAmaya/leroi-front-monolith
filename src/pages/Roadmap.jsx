@@ -184,7 +184,7 @@ function Roadmap() {
       formData.append("email", email);
   
 
-      /*const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/cost-estimates`, {
+      const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL_PREPROCESSING}/files/cost-estimates`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -193,19 +193,22 @@ function Roadmap() {
         },
         body: JSON.stringify(dataToSend),
       });
+      console.log("Se esta utilizando la URL:", import.meta.env.VITE_BACKEND_URL_PREPROCESSING, "/files/cost-estimates");
+
 
       const previewResponse = await previewPromise;
       if (!previewResponse.ok) {
         throw new Error('Error al obtener la vista previa de costos');
       }
 
-      const previewResult = await previewResponse.json();*/
+      const previewResult = await previewResponse.json();
       
-      const credits_cost = 1;
+      const credits_cost = previewResult.credits_cost || 1;
       const user_credits = userData?.credits || 0;
 
+      console.log("COSTO DE CREDITOS:", credits_cost);
   
-      const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/analyses`, {
+      const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_URL_PREPROCESSING}/files/analyses`, {
         method: 'POST',
         headers: { 
           Authorization: `Bearer ${authToken}`,
@@ -213,6 +216,8 @@ function Roadmap() {
         },
         body: JSON.stringify(dataToSend),
       });
+      console.log("Se esta utilizando la URL:", import.meta.env.VITE_BACKEND_URL_PREPROCESSING, "/files/analyses");
+
   
       setPreviewCost("Costo: " + credits_cost.toLocaleString() + " Créditos");
       setUserCredits("Actualmente tienes " + user_credits.toLocaleString() + " créditos");
@@ -229,7 +234,7 @@ function Roadmap() {
           
         })
         .then((analyzeResult) => {
-          // console.log("Analyze result:", analyzeResult);
+          console.log("Analyze result:", analyzeResult);
           if (analyzeResult.has_virus) {
             toast.error("El archivo contiene virus. El usuario ha sido eliminado.");
           }
