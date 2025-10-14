@@ -202,7 +202,9 @@ function Roadmap() {
       }
 
       const previewResult = await previewResponse.json();
+      const previewResult = await previewResponse.json();
       
+      const credits_cost = previewResult.credits_cost || 1;
       const credits_cost = previewResult.credits_cost || 1;
       const user_credits = userData?.credits || 0;
 
