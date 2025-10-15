@@ -42,14 +42,35 @@ function GeneratedRoadmap() {
     const x = event.clientX;
     const y = event.clientY;
     setModalPosition({ x, y });
-  
+
     let info = roadmapInfo[name];
+    
+    if (!info) {
+      setTopicInfo("Sin información disponible.");
+      setLinkInfo([]);
+      setModalInfo(true);
+      return;
+    }
+
+    let formattedText = "";
+
+    if (typeof info === "object") {
+      if (Array.isArray(info)) {
+        formattedText = info.join("\n");
+      } else {
+        formattedText = Object.entries(info)
+          .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(", ") : value}`)
+          .join("\n");
+      }
+    } else {
+      formattedText = info.toString();
+    }
+
     const regex = /(https?:\/\/[^\s]+)/g;
-    const matches = info.match(regex);
-  
-    info = info.replace(regex, '');
-  
-    setTopicInfo(info);
+    const matches = formattedText.match(regex);
+    const cleanText = formattedText.replace(regex, "").trim();
+
+    setTopicInfo(cleanText);
     setLinkInfo(matches || []);
     setModalInfo(true);
   };
@@ -63,7 +84,7 @@ function GeneratedRoadmap() {
     setQuestionModal(false);
     setLoadingPage(true);
     try {
-      const questionsResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/generate-questions`, {
+      const questionsResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/questions`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
