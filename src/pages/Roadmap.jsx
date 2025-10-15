@@ -246,6 +246,7 @@ const handleDrop = (e) => {
     setLoadingPage(true);
     setLoadingText("Buscando temas relacionados... 📈🧠📚");
     console.log("🚀 URL que está usando:", import.meta.env.VITE_BACKEND_URL);
+    console.log("URL que se va a llamar:", `${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/documents`);
 
   
     const dataToSend = {
@@ -307,11 +308,11 @@ const handleDrop = (e) => {
       
       const result = await response.json();
       console.log("Response:", result.roadmap);
-      const parseResult = JSON.parse(result.roadmap);
-      const parseSecondResult = JSON.parse(result.extra_info)
+      const parseResult = typeof result.roadmap === "string" ? JSON.parse(result.roadmap) : result.roadmap;
+      const parseSecondResult = typeof result.extra_info === "string" ? JSON.parse(result.extra_info) : result.extra_info;
       console.log("VAMO A VERRRR", parseSecondResult);
 
-      /*const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/related-topics`, {
+      const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/related-topics`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -322,15 +323,10 @@ const handleDrop = (e) => {
       });
       
       const resultTopics = await responseTopics.json();
-      const parseResultTopics = JSON.parse(resultTopics);
+      const parseResultTopics = typeof resultTopics === "string" ? JSON.parse(resultTopics) : resultTopics;
+      console.log("TEMAS RELACIONADOS ANTES", resultTopics, "DESPUES", parseResultTopics)
 
-      setRelatedTopics(parseResultTopics);*/
-      setRelatedTopics([
-        "Programación en Python",
-        "Algoritmos y Estructuras de Datos",
-        "Bases de Datos SQL",
-        "Redes de Computadores"
-      ])
+      setRelatedTopics(parseResultTopics);
       setRoadmapTopics(parseResult);    
       setRoadmapInfo(parseSecondResult);
     } catch (error) {
