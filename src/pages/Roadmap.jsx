@@ -204,7 +204,7 @@ function Roadmap() {
       formData.append("email", email);
   
 
-      const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL_PREPROCESSING}/files/cost-estimates`, {
+      /*const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL_PREPROCESSING}/files/cost-estimates`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -222,12 +222,25 @@ function Roadmap() {
       }
 
   
-      const previewResult = await previewResponse.json();
+      const previewResult = await previewResponse.json();*/
 
-      const credits_cost = previewResult.credits_cost || 1;
-      const user_credits = userData?.credits || 0;
+      if (!userData || !userData.email) {
+        toast.error("Esperando los datos del usuario...");
+        return;
+      }
 
-      console.log("COSTO DE CREDITOS:", credits_cost);
+      const user_credits = await getUserCredits();
+      const credits_cost = 1;
+      console.log("💰 Créditos actuales:", user_credits);
+
+      setPreviewCost(`Costo: ${credits_cost} crédito(s)`);
+      setUserCredits(`Actualmente tienes ${user_credits} crédito(s)`);
+      setShowFileInfo(true);
+
+      const canPay = Number(user_credits) >= Number(credits_cost);
+      setCanUserPay(canPay);
+
+      if (!canPay) toast.error('Créditos insuficientes 😔');
   
       const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_URL_PREPROCESSING}/files/analyses`, {
         method: 'POST',
@@ -240,15 +253,11 @@ function Roadmap() {
       console.log("Se esta utilizando la URL:", import.meta.env.VITE_BACKEND_URL_PREPROCESSING, "/files/analyses");
 
   
-      setPreviewCost("Costo: " + credits_cost.toLocaleString() + " Créditos");
-      setUserCredits("Actualmente tienes " + user_credits.toLocaleString() + " créditos");
+      setPreviewCost("Costo: " + credits_cost.toLocaleString() + " crédito(s)");
+      setUserCredits("Actualmente tienes " + user_credits.toLocaleString() + " crédito(s)");
 
       setShowFileInfo(true);
-  
-      setCanUserPay(credits_cost > user_credits);
-      if (credits_cost > user_credits) {
-        toast.error('Creditos Insuficientes 😔');
-      }
+
       analyzePromise
         .then((analyzeResponse) => {
           return analyzeResponse.json();
@@ -317,7 +326,7 @@ const handleDrop = (e) => {
   
     try {
 
-      const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/documents`, {
+      const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/documents`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -346,6 +355,34 @@ const handleDrop = (e) => {
     }
   };
 
+  const getUserCredits = async () => {
+    try {
+      const response = await fetch(
+        `${backendUrl}/users_authentication_path/user-credits/${encodeURIComponent(userData.email)}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Error al obtener los créditos del usuario');
+      }
+
+      const data = await response.json();
+      console.log("💰 Créditos actuales:", data);
+
+      return data.credits; 
+
+    } catch (error) {
+      console.error('Error al obtener créditos:', error);
+      return 0;
+    }
+  };
+
   const updateUserCredits = async (amount) => {
     try {
       const response = await fetch(`${backendUrl}/users_authentication_path/user-credits/${encodeURIComponent(userData.email)}`, {
@@ -353,7 +390,6 @@ const handleDrop = (e) => {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authToken}`,
-          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({ amount }),
       });
@@ -369,12 +405,13 @@ const handleDrop = (e) => {
     }
   };
 
-  const handleSelectedTopic = async(topic) => {  
+  const handleSelectedTopic = async (topic) => {  
     setTopicsModal(false);
     setLoadingPage(true);
     setLoadingText("Estamos creando tu ruta de aprendizaje 😁");
+
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/roadmaps`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/roadmaps`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -382,27 +419,28 @@ const handleDrop = (e) => {
         },
         body: JSON.stringify({ topic }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Error al enviar el topic al backend');
       }
-         const result = await response.json();
-    console.log("Response completa del backend:", result);
-    
-    // ✅ Función para extraer JSON limpio de strings con markdown o python
-    const extractJSON = (str) => {
-      if (!str) {
-        console.error('String vacío recibido');
-        return null;
-      }
-      
-      const result = await response.json();
-      console.log("Response:", result.roadmap);
-      const parseResult = typeof result.roadmap === "string" ? JSON.parse(result.roadmap) : result.roadmap;
-      const parseSecondResult = typeof result.extra_info === "string" ? JSON.parse(result.extra_info) : result.extra_info;
-      console.log("VAMO A VERRRR", parseSecondResult);
 
-      const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/related-topics`, {
+      const result = await response.json();
+      console.log("🧩 Response completa del backend:", result);
+
+      const roadmapData = typeof result.roadmap === "string"
+        ? JSON.parse(result.roadmap)
+        : result.roadmap;
+
+      const extraInfoData = typeof result.extra_info === "string"
+        ? JSON.parse(result.extra_info)
+        : result.extra_info;
+
+      console.log("📘 Roadmap recibido:", roadmapData);
+      console.log("📙 Extra info recibida:", extraInfoData);
+
+      await updateUserCredits(-1);
+
+      const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/related-topics`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -410,71 +448,33 @@ const handleDrop = (e) => {
         },
         body: JSON.stringify({ topic }),
       });
-      
-      if (firstBrace === -1 || lastBrace === -1) {
-        console.error('No se encontraron llaves {} en el string');
-        return null;
-      }
-      
-      cleaned = cleaned.substring(firstBrace, lastBrace + 1);
-      console.log('String limpio (primeros 200 chars):', cleaned.substring(0, 200));
-      
-      try {
-        return JSON.parse(cleaned);
-      } catch (e) {
-        console.error('Error al parsear JSON:', e);
-        console.error('String que causó el error:', cleaned.substring(0, 500));
-        return null;
-      }
-    };
-    
-    // ✅ Parsear roadmap
-    console.log("Tipo de result.roadmap:", typeof result.roadmap);
-    console.log("Contenido de result.roadmap:", result.roadmap);
-    
-    const parseResult = extractJSON(result.roadmap);
-    if (!parseResult) {
-      throw new Error('No se pudo parsear el roadmap');
-    }
-    console.log("Roadmap parseado correctamente:", parseResult);
-    
-    // ✅ Parsear extra_info
-    console.log("Tipo de result.extra_info:", typeof result.extra_info);
-    console.log("Contenido de result.extra_info:", result.extra_info);
-    
-    const parseSecondResult = extractJSON(result.extra_info);
-    if (!parseSecondResult) {
-      throw new Error('No se pudo parsear extra_info');
-    }
-    console.log("Extra info parseado correctamente:", parseSecondResult);
 
-    // Descontar 1 crédito al usuario por roadmap generado exitosamente
-    await updateUserCredits(-1);
+      if (!responseTopics.ok) {
+        throw new Error('Error al obtener los temas relacionados');
+      }
 
-    setRelatedTopics([
-      "Programación en Python",
-      "Algoritmos y Estructuras de Datos",
-      "Bases de Datos SQL",
-      "Redes de Computadores"
-    ]);
-    
-    setRoadmapTopics(parseResult);    
-    setRoadmapInfo(parseSecondResult);
-    
-  } catch (error) {
-    console.error('Error detallado al generar la ruta:', error);
-    console.error('Stack trace:', error.stack);
-    
-    if (error instanceof SyntaxError) {
-      toast.error('Error al procesar la respuesta del servidor. El formato no es válido.');
-    } else {
-      toast.error('No pudimos generar tu ruta de aprendizaje 😔');
+      const resultTopics = await responseTopics.json();
+      console.log("🔗 Temas relacionados recibidos:", resultTopics);
+
+      setRelatedTopics(resultTopics);
+      setRoadmapTopics(roadmapData);
+      setRoadmapInfo(extraInfoData);
+
+    } catch (error) {
+      console.error('🚨 Error detallado al generar la ruta:', error);
+      console.error('📜 Stack trace:', error.stack);
+
+      if (error instanceof SyntaxError) {
+        toast.error('Error al procesar la respuesta del servidor. El formato no es válido.');
+      } else {
+        toast.error('No pudimos generar tu ruta de aprendizaje 😔');
+      }
+    } finally {
+      setLoadingPage(false);
+      setLoadingText("");
     }
-  } finally {
-    setLoadingPage(false);
-    setLoadingText("");
-  }
-};
+  };
+
 
   return (
     <>
@@ -529,7 +529,7 @@ const handleDrop = (e) => {
 
               {/* Contenedor para los botones */}
               <div className="buttons-container">
-                <button className="generate-button" onClick={handleSubmitFile} disabled={CanUserPay}>
+                <button className="generate-button" onClick={handleSubmitFile} disabled={!CanUserPay}>
                   {isLoading ? 'Generando tu ruta de aprendizaje...' : 'Generar ruta de aprendizaje'}
                 </button>
                 <button className="reset-button" onClick={handleReset}>

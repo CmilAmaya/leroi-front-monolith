@@ -84,7 +84,7 @@ function GeneratedRoadmap() {
     setQuestionModal(false);
     setLoadingPage(true);
     try {
-      const questionsResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/questions`, {
+      const questionsResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/questions`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
