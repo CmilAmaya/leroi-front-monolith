@@ -298,11 +298,16 @@ const handleDrop = (e) => {
   };
 
   const handleSubmitFile = async () => {
-    if (!base64 || !fileUploaded) {
+    if (!fileUploaded) {
       toast.error("No has subido ningún archivo");
       return;
     }
-  
+
+    if (!base64 || base64.length < 50) {
+      toast.error("El archivo aún se está procesando. Espera unos segundos e inténtalo de nuevo.");
+      return;
+    }
+
     setLoadingPage(true);
     setLoadingText("Buscando temas relacionados... 📈🧠📚");
     console.log("🚀 URL que está usando:", import.meta.env.VITE_BACKEND_URL);
@@ -316,8 +321,7 @@ const handleDrop = (e) => {
         method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
-          "Content-Type": "application/json",
-          'x-api-key': import.meta.env.VITE_API_KEY
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(fileData),
       });
@@ -374,8 +378,7 @@ const handleDrop = (e) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`,
-          'x-api-key': import.meta.env.VITE_API_KEY
+          'Authorization': `Bearer ${authToken}`
         },
         body: JSON.stringify({ topic }),
       });
@@ -393,24 +396,20 @@ const handleDrop = (e) => {
         return null;
       }
       
-      // Si ya es un objeto, devolverlo
-      if (typeof str === 'object') {
-        console.log('Ya es un objeto JSON válido');
-        return str;
-      }
-      
-      console.log('String original a limpiar:', str.substring(0, 200));
-      
-      // Remover bloques de código markdown (```json, ```python, etc.)
-      let cleaned = str.trim();
-      
-      // Remover bloques de código markdown al inicio y final
-      cleaned = cleaned.replace(/^```(?:json|python|javascript|py)?\s*/i, '');
-      cleaned = cleaned.replace(/```\s*$/g, '');
-      
-      // Buscar el primer { y el último }
-      const firstBrace = cleaned.indexOf('{');
-      const lastBrace = cleaned.lastIndexOf('}');
+      const result = await response.json();
+      console.log("Response:", result.roadmap);
+      const parseResult = typeof result.roadmap === "string" ? JSON.parse(result.roadmap) : result.roadmap;
+      const parseSecondResult = typeof result.extra_info === "string" ? JSON.parse(result.extra_info) : result.extra_info;
+      console.log("VAMO A VERRRR", parseSecondResult);
+
+      const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/related-topics`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify({ topic }),
+      });
       
       if (firstBrace === -1 || lastBrace === -1) {
         console.error('No se encontraron llaves {} en el string');
