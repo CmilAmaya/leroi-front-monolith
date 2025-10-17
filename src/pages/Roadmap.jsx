@@ -238,11 +238,16 @@ const handleDrop = (e) => {
   };
 
   const handleSubmitFile = async () => {
-    if (!base64 || !fileUploaded) {
+    if (!fileUploaded) {
       toast.error("No has subido ningún archivo");
       return;
     }
-  
+
+    if (!base64 || base64.length < 50) {
+      toast.error("El archivo aún se está procesando. Espera unos segundos e inténtalo de nuevo.");
+      return;
+    }
+
     setLoadingPage(true);
     setLoadingText("Buscando temas relacionados... 📈🧠📚");
     console.log("🚀 URL que está usando:", import.meta.env.VITE_BACKEND_URL);
@@ -261,8 +266,7 @@ const handleDrop = (e) => {
         method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
-          "Content-Type": "application/json",
-          'x-api-key': import.meta.env.VITE_API_KEY
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(dataToSend),
       });
@@ -296,8 +300,7 @@ const handleDrop = (e) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`,
-          'x-api-key': import.meta.env.VITE_API_KEY
+          'Authorization': `Bearer ${authToken}`
         },
         body: JSON.stringify({ topic }),
       });
@@ -316,8 +319,7 @@ const handleDrop = (e) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`,
-          'x-api-key': import.meta.env.VITE_API_KEY
+          'Authorization': `Bearer ${authToken}`
         },
         body: JSON.stringify({ topic }),
       });
