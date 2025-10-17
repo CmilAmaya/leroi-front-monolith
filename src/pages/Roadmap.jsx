@@ -224,10 +224,23 @@ function Roadmap() {
   
       const previewResult = await previewResponse.json();*/
 
-      const credits_cost = 1;
-      const user_credits = userData?.credits || 0;
+      if (!userData || !userData.email) {
+        toast.error("Esperando los datos del usuario...");
+        return;
+      }
 
-      console.log("COSTO DE CREDITOS:", credits_cost);
+      const user_credits = await getUserCredits();
+      const credits_cost = 1;
+      console.log("💰 Créditos actuales:", user_credits);
+
+      setPreviewCost(`Costo: ${credits_cost} crédito(s)`);
+      setUserCredits(`Actualmente tienes ${user_credits} crédito(s)`);
+      setShowFileInfo(true);
+
+      const canPay = Number(user_credits) >= Number(credits_cost);
+      setCanUserPay(canPay);
+
+      if (!canPay) toast.error('Créditos insuficientes 😔');
   
       const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_URL_PREPROCESSING}/files/analyses`, {
         method: 'POST',
@@ -240,15 +253,11 @@ function Roadmap() {
       console.log("Se esta utilizando la URL:", import.meta.env.VITE_BACKEND_URL_PREPROCESSING, "/files/analyses");
 
   
-      setPreviewCost("Costo: " + credits_cost.toLocaleString() + " Créditos");
-      setUserCredits("Actualmente tienes " + user_credits.toLocaleString() + " créditos");
+      setPreviewCost("Costo: " + credits_cost.toLocaleString() + " crédito(s)");
+      setUserCredits("Actualmente tienes " + user_credits.toLocaleString() + " crédito(s)");
 
       setShowFileInfo(true);
-  
-      setCanUserPay(credits_cost > user_credits);
-      if (credits_cost > user_credits) {
-        toast.error('Creditos Insuficientes 😔');
-      }
+
       analyzePromise
         .then((analyzeResponse) => {
           return analyzeResponse.json();
@@ -317,7 +326,7 @@ const handleDrop = (e) => {
   
     try {
 
-      const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/documents`, {
+      const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/documents`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -346,6 +355,34 @@ const handleDrop = (e) => {
     }
   };
 
+  const getUserCredits = async () => {
+    try {
+      const response = await fetch(
+        `${backendUrl}/users_authentication_path/user-credits/${encodeURIComponent(userData.email)}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Error al obtener los créditos del usuario');
+      }
+
+      const data = await response.json();
+      console.log("💰 Créditos actuales:", data);
+
+      return data.credits; 
+
+    } catch (error) {
+      console.error('Error al obtener créditos:', error);
+      return 0;
+    }
+  };
+
   const updateUserCredits = async (amount) => {
     try {
       const response = await fetch(`${backendUrl}/users_authentication_path/user-credits/${encodeURIComponent(userData.email)}`, {
@@ -353,7 +390,6 @@ const handleDrop = (e) => {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authToken}`,
-          'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({ amount }),
       });
@@ -375,7 +411,7 @@ const handleDrop = (e) => {
     setLoadingText("Estamos creando tu ruta de aprendizaje 😁");
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/roadmaps`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/roadmaps`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -404,7 +440,7 @@ const handleDrop = (e) => {
 
       await updateUserCredits(-1);
 
-      const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/related-topics`, {
+      const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL}/learning_path/related-topics`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -493,7 +529,7 @@ const handleDrop = (e) => {
 
               {/* Contenedor para los botones */}
               <div className="buttons-container">
-                <button className="generate-button" onClick={handleSubmitFile} disabled={CanUserPay}>
+                <button className="generate-button" onClick={handleSubmitFile} disabled={!CanUserPay}>
                   {isLoading ? 'Generando tu ruta de aprendizaje...' : 'Generar ruta de aprendizaje'}
                 </button>
                 <button className="reset-button" onClick={handleReset}>
