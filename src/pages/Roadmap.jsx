@@ -29,6 +29,10 @@ function Roadmap() {
   const [relatedTopics, setRelatedTopics] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [userData, setUserData] = useState(null);
+
+  // NUEVO: Estado global para almacenar dataToSend
+  const [fileData, setFileData] = useState(null);
+
   const authToken = localStorage.getItem("token");
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -37,7 +41,10 @@ function Roadmap() {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onloadend = () => {
-        resolve(reader.result);
+        // Remover el prefijo para obtener base64 puro
+        const base64String = reader.result;
+        const base64Data = base64String.split(',')[1];
+        resolve(base64Data);
       };
       reader.onerror = (error) => {
         reject(error);
@@ -135,24 +142,37 @@ function Roadmap() {
     setFileUploaded(file);
   
     try {
-      const base64String = await convertToBase64(file);
-      
+      // Procesar PDF para obtener primera página
       const pdfDoc = await PDFDocument.load(await file.arrayBuffer());
       const newPdfDoc = await PDFDocument.create();
       const [firstPage] = await newPdfDoc.copyPages(pdfDoc, [0]); 
       newPdfDoc.addPage(firstPage);
       const pdfBytes = await newPdfDoc.save();
-      const base64Page = await convertToBase64(new Blob([pdfBytes], { type: 'application/pdf' }));
-      setBase64(base64Page);
-      console.log("VIEJO BASE64", base64String);
-      console.log("NUEVO BASE64:", base64Page);
-  
+      const previewBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+      
+      // Para preview: mantener formato completo con prefijo
+      const base64Preview = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(previewBlob);
+      });
+      
+      // Para backend: solo base64 puro
+      const base64Pure = await convertToBase64(previewBlob);
+      
+      setBase64(base64Preview); // Para el iframe
+      
+      // ✅ CREAR Y GUARDAR dataToSend en el estado global
       const dataToSend = {
         fileName: file.name,
         fileType: file.type, 
         fileSize: file.size,
-        fileBase64: base64Page,
+        fileBase64: base64Pure, // Base64 sin prefijo
       };
+
+      setFileData(dataToSend); // Guardar en estado global
+      console.log("📦 Datos del archivo guardados:", dataToSend);
+  
   
       function getEmailFromToken(token) {
         try {
@@ -184,7 +204,7 @@ function Roadmap() {
       formData.append("email", email);
   
 
-      /*const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/cost-estimates`, {
+      const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL_PREPROCESSING}/files/cost-estimates`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -193,19 +213,23 @@ function Roadmap() {
         },
         body: JSON.stringify(dataToSend),
       });
+      console.log("Se esta utilizando la URL:", import.meta.env.VITE_BACKEND_URL_PREPROCESSING, "/files/cost-estimates");
+
 
       const previewResponse = await previewPromise;
       if (!previewResponse.ok) {
         throw new Error('Error al obtener la vista previa de costos');
       }
 
-      const previewResult = await previewResponse.json();*/
-      
-      const credits_cost = 1;
+  
+      const previewResult = await previewResponse.json();
+
+      const credits_cost = previewResult.credits_cost || 1;
       const user_credits = userData?.credits || 0;
 
+      console.log("COSTO DE CREDITOS:", credits_cost);
   
-      const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/analyses`, {
+      const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_URL_PREPROCESSING}/files/analyses`, {
         method: 'POST',
         headers: { 
           Authorization: `Bearer ${authToken}`,
@@ -213,6 +237,8 @@ function Roadmap() {
         },
         body: JSON.stringify(dataToSend),
       });
+      console.log("Se esta utilizando la URL:", import.meta.env.VITE_BACKEND_URL_PREPROCESSING, "/files/analyses");
+
   
       setPreviewCost("Costo: " + credits_cost.toLocaleString() + " Créditos");
       setUserCredits("Actualmente tienes " + user_credits.toLocaleString() + " créditos");
@@ -229,7 +255,7 @@ function Roadmap() {
           
         })
         .then((analyzeResult) => {
-          // console.log("Analyze result:", analyzeResult);
+          console.log("Analyze result:", analyzeResult);
           if (analyzeResult.has_virus) {
             toast.error("El archivo contiene virus. El usuario ha sido eliminado.");
           }
@@ -285,24 +311,19 @@ const handleDrop = (e) => {
     setLoadingPage(true);
     setLoadingText("Buscando temas relacionados... 📈🧠📚");
     console.log("🚀 URL que está usando:", import.meta.env.VITE_BACKEND_URL);
-    console.log("URL que se va a llamar:", `${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/documents`);
-
+    console.log("📦 Datos a enviar:", fileData);
   
-    const dataToSend = {
-      fileName: fileUploaded.name,
-      fileType: fileUploaded.type,
-      fileSize: fileUploaded.size,
-      fileBase64: base64,
-    };
+   
   
     try {
+
       const processResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/documents`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(dataToSend),
+        body: JSON.stringify(fileData),
       });
   
       if (!processResponse.ok) {
@@ -365,13 +386,21 @@ const handleDrop = (e) => {
       if (!response.ok) {
         throw new Error('Error al enviar el topic al backend');
       }
+         const result = await response.json();
+    console.log("Response completa del backend:", result);
+    
+    // ✅ Función para extraer JSON limpio de strings con markdown o python
+    const extractJSON = (str) => {
+      if (!str) {
+        console.error('String vacío recibido');
+        return null;
+      }
       
       const result = await response.json();
       console.log("Response:", result.roadmap);
       const parseResult = typeof result.roadmap === "string" ? JSON.parse(result.roadmap) : result.roadmap;
       const parseSecondResult = typeof result.extra_info === "string" ? JSON.parse(result.extra_info) : result.extra_info;
       console.log("VAMO A VERRRR", parseSecondResult);
-
 
       const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/related-topics`, {
         method: 'POST',
@@ -382,18 +411,70 @@ const handleDrop = (e) => {
         body: JSON.stringify({ topic }),
       });
       
-      const resultTopics = await responseTopics.json();
-      const parseResultTopics = typeof resultTopics === "string" ? JSON.parse(resultTopics) : resultTopics;
-      console.log("TEMAS RELACIONADOS ANTES", resultTopics, "DESPUES", parseResultTopics)
+      if (firstBrace === -1 || lastBrace === -1) {
+        console.error('No se encontraron llaves {} en el string');
+        return null;
+      }
+      
+      cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+      console.log('String limpio (primeros 200 chars):', cleaned.substring(0, 200));
+      
+      try {
+        return JSON.parse(cleaned);
+      } catch (e) {
+        console.error('Error al parsear JSON:', e);
+        console.error('String que causó el error:', cleaned.substring(0, 500));
+        return null;
+      }
+    };
+    
+    // ✅ Parsear roadmap
+    console.log("Tipo de result.roadmap:", typeof result.roadmap);
+    console.log("Contenido de result.roadmap:", result.roadmap);
+    
+    const parseResult = extractJSON(result.roadmap);
+    if (!parseResult) {
+      throw new Error('No se pudo parsear el roadmap');
+    }
+    console.log("Roadmap parseado correctamente:", parseResult);
+    
+    // ✅ Parsear extra_info
+    console.log("Tipo de result.extra_info:", typeof result.extra_info);
+    console.log("Contenido de result.extra_info:", result.extra_info);
+    
+    const parseSecondResult = extractJSON(result.extra_info);
+    if (!parseSecondResult) {
+      throw new Error('No se pudo parsear extra_info');
+    }
+    console.log("Extra info parseado correctamente:", parseSecondResult);
 
-      setRelatedTopics(parseResultTopics);
-      setRoadmapTopics(parseResult);    
-      setRoadmapInfo(parseSecondResult);
-    } catch (error) {
-      console.error('Error al enviar al generar la ruta, es el siguiente:', error);
+    // Descontar 1 crédito al usuario por roadmap generado exitosamente
+    await updateUserCredits(-1);
+
+    setRelatedTopics([
+      "Programación en Python",
+      "Algoritmos y Estructuras de Datos",
+      "Bases de Datos SQL",
+      "Redes de Computadores"
+    ]);
+    
+    setRoadmapTopics(parseResult);    
+    setRoadmapInfo(parseSecondResult);
+    
+  } catch (error) {
+    console.error('Error detallado al generar la ruta:', error);
+    console.error('Stack trace:', error.stack);
+    
+    if (error instanceof SyntaxError) {
+      toast.error('Error al procesar la respuesta del servidor. El formato no es válido.');
+    } else {
       toast.error('No pudimos generar tu ruta de aprendizaje 😔');
     }
-  };
+  } finally {
+    setLoadingPage(false);
+    setLoadingText("");
+  }
+};
 
   return (
     <>
