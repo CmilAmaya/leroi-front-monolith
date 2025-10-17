@@ -204,7 +204,7 @@ function Roadmap() {
       formData.append("email", email);
   
 
-      const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL_PREPROCESSING}/files/cost-estimates`, {
+      /*const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL_PREPROCESSING}/files/cost-estimates`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -222,9 +222,9 @@ function Roadmap() {
       }
 
   
-      const previewResult = await previewResponse.json();
+      const previewResult = await previewResponse.json();*/
 
-      const credits_cost = previewResult.credits_cost || 1;
+      const credits_cost = 1;
       const user_credits = userData?.credits || 0;
 
       console.log("COSTO DE CREDITOS:", credits_cost);
@@ -369,10 +369,11 @@ const handleDrop = (e) => {
     }
   };
 
-  const handleSelectedTopic = async(topic) => {  
+  const handleSelectedTopic = async (topic) => {  
     setTopicsModal(false);
     setLoadingPage(true);
     setLoadingText("Estamos creando tu ruta de aprendizaje 😁");
+
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/roadmaps`, {
         method: 'POST',
@@ -382,25 +383,26 @@ const handleDrop = (e) => {
         },
         body: JSON.stringify({ topic }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Error al enviar el topic al backend');
       }
-         const result = await response.json();
-    console.log("Response completa del backend:", result);
-    
-    // ✅ Función para extraer JSON limpio de strings con markdown o python
-    const extractJSON = (str) => {
-      if (!str) {
-        console.error('String vacío recibido');
-        return null;
-      }
-      
+
       const result = await response.json();
-      console.log("Response:", result.roadmap);
-      const parseResult = typeof result.roadmap === "string" ? JSON.parse(result.roadmap) : result.roadmap;
-      const parseSecondResult = typeof result.extra_info === "string" ? JSON.parse(result.extra_info) : result.extra_info;
-      console.log("VAMO A VERRRR", parseSecondResult);
+      console.log("🧩 Response completa del backend:", result);
+
+      const roadmapData = typeof result.roadmap === "string"
+        ? JSON.parse(result.roadmap)
+        : result.roadmap;
+
+      const extraInfoData = typeof result.extra_info === "string"
+        ? JSON.parse(result.extra_info)
+        : result.extra_info;
+
+      console.log("📘 Roadmap recibido:", roadmapData);
+      console.log("📙 Extra info recibida:", extraInfoData);
+
+      await updateUserCredits(-1);
 
       const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/related-topics`, {
         method: 'POST',
@@ -410,71 +412,33 @@ const handleDrop = (e) => {
         },
         body: JSON.stringify({ topic }),
       });
-      
-      if (firstBrace === -1 || lastBrace === -1) {
-        console.error('No se encontraron llaves {} en el string');
-        return null;
-      }
-      
-      cleaned = cleaned.substring(firstBrace, lastBrace + 1);
-      console.log('String limpio (primeros 200 chars):', cleaned.substring(0, 200));
-      
-      try {
-        return JSON.parse(cleaned);
-      } catch (e) {
-        console.error('Error al parsear JSON:', e);
-        console.error('String que causó el error:', cleaned.substring(0, 500));
-        return null;
-      }
-    };
-    
-    // ✅ Parsear roadmap
-    console.log("Tipo de result.roadmap:", typeof result.roadmap);
-    console.log("Contenido de result.roadmap:", result.roadmap);
-    
-    const parseResult = extractJSON(result.roadmap);
-    if (!parseResult) {
-      throw new Error('No se pudo parsear el roadmap');
-    }
-    console.log("Roadmap parseado correctamente:", parseResult);
-    
-    // ✅ Parsear extra_info
-    console.log("Tipo de result.extra_info:", typeof result.extra_info);
-    console.log("Contenido de result.extra_info:", result.extra_info);
-    
-    const parseSecondResult = extractJSON(result.extra_info);
-    if (!parseSecondResult) {
-      throw new Error('No se pudo parsear extra_info');
-    }
-    console.log("Extra info parseado correctamente:", parseSecondResult);
 
-    // Descontar 1 crédito al usuario por roadmap generado exitosamente
-    await updateUserCredits(-1);
+      if (!responseTopics.ok) {
+        throw new Error('Error al obtener los temas relacionados');
+      }
 
-    setRelatedTopics([
-      "Programación en Python",
-      "Algoritmos y Estructuras de Datos",
-      "Bases de Datos SQL",
-      "Redes de Computadores"
-    ]);
-    
-    setRoadmapTopics(parseResult);    
-    setRoadmapInfo(parseSecondResult);
-    
-  } catch (error) {
-    console.error('Error detallado al generar la ruta:', error);
-    console.error('Stack trace:', error.stack);
-    
-    if (error instanceof SyntaxError) {
-      toast.error('Error al procesar la respuesta del servidor. El formato no es válido.');
-    } else {
-      toast.error('No pudimos generar tu ruta de aprendizaje 😔');
+      const resultTopics = await responseTopics.json();
+      console.log("🔗 Temas relacionados recibidos:", resultTopics);
+
+      setRelatedTopics(resultTopics);
+      setRoadmapTopics(roadmapData);
+      setRoadmapInfo(extraInfoData);
+
+    } catch (error) {
+      console.error('🚨 Error detallado al generar la ruta:', error);
+      console.error('📜 Stack trace:', error.stack);
+
+      if (error instanceof SyntaxError) {
+        toast.error('Error al procesar la respuesta del servidor. El formato no es válido.');
+      } else {
+        toast.error('No pudimos generar tu ruta de aprendizaje 😔');
+      }
+    } finally {
+      setLoadingPage(false);
+      setLoadingText("");
     }
-  } finally {
-    setLoadingPage(false);
-    setLoadingText("");
-  }
-};
+  };
+
 
   return (
     <>
