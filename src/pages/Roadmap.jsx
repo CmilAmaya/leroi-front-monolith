@@ -28,7 +28,9 @@ function Roadmap() {
   const [roadmapInfo, setRoadmapInfo] = useState({});
   const [relatedTopics, setRelatedTopics] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [userData, setUserData] = useState(null);
   const authToken = localStorage.getItem("token");
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -82,6 +84,38 @@ function Roadmap() {
       console.log("Related Topics :D", relatedTopics);
     }
   }, [relatedTopics]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!authToken) {
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        const userResponse = await fetch(`${backendUrl}/users_authentication_path/user-profile`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "application/json",
+            'x-api-key': import.meta.env.VITE_API_KEY
+          },
+        });
+
+        if (!userResponse.ok) {
+          throw new Error("Error al obtener los datos del usuario");
+        }
+
+        const userData = await userResponse.json();
+        setUserData(userData.data);
+      } catch (error) {
+        console.error(error);
+        window.location.href = "/login";
+      }
+    };
+
+    fetchUserData();
+  }, [backendUrl, authToken]);
 
   const handleFileChange = async (e) => {
     
@@ -168,7 +202,7 @@ function Roadmap() {
       const previewResult = await previewResponse.json();*/
       
       const credits_cost = 1;
-      const user_credits = 100;
+      const user_credits = userData?.credits || 0;
 
   
       const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/analyses`, {
@@ -291,6 +325,29 @@ const handleDrop = (e) => {
     }
   };
 
+  const updateUserCredits = async (amount) => {
+    try {
+      const response = await fetch(`${backendUrl}/users_authentication_path/user-credits/${encodeURIComponent(userData.email)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`,
+          'x-api-key': import.meta.env.VITE_API_KEY
+        },
+        body: JSON.stringify({ amount }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar los créditos del usuario');
+      }
+
+      // Actualizar los datos del usuario localmente
+      setUserData(prev => ({ ...prev, credits: prev.credits + amount }));
+    } catch (error) {
+      console.error('Error al actualizar créditos:', error);
+    }
+  };
+
   const handleSelectedTopic = async(topic) => {  
     setTopicsModal(false);
     setLoadingPage(true);
@@ -314,6 +371,7 @@ const handleDrop = (e) => {
       const parseResult = typeof result.roadmap === "string" ? JSON.parse(result.roadmap) : result.roadmap;
       const parseSecondResult = typeof result.extra_info === "string" ? JSON.parse(result.extra_info) : result.extra_info;
       console.log("VAMO A VERRRR", parseSecondResult);
+
 
       const responseTopics = await fetch(`${import.meta.env.VITE_BACKEND_URL_LEARNING}/learning_path/related-topics`, {
         method: 'POST',
