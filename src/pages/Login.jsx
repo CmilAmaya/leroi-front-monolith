@@ -61,8 +61,6 @@ function Login() {
   // Función para manejar el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log('Form submit triggered', formData);
     
     if (validateForm()) {
       setIsSubmitting(true);
@@ -75,15 +73,12 @@ function Login() {
           },
           body: JSON.stringify(formData)
         });
-        console.log("ESTA ES LA REPUESTA DEL LOGIN", response)
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.detail);
         }
 
         const data = await response.json();
-
-        console.log('Token before storing:', data.access_token);
 
         // Verificar si se requiere 2FA
         if (data.status === '2fa_required') {
@@ -129,8 +124,6 @@ function Login() {
         }),
       });
   
-      console.log('Respuesta de /verify-code:', verifyCodeResponse); 
-  
       if (!verifyCodeResponse.ok) {
         const errorData = await verifyCodeResponse.json();
         console.error('Error en /verify-code:', errorData); 
@@ -138,11 +131,9 @@ function Login() {
       }
   
       const verifyCodeData = await verifyCodeResponse.json();
-      console.log('Datos de /verify-code:', verifyCodeData); 
   
       const token = verifyCodeData.access_token;
       localStorage.setItem('token', token);
-      console.log('Token guardado:', token);
   
       navigate('/roadmap');
       window.location.reload('/roadmap');
