@@ -30,7 +30,7 @@ function Pricing() {
 
             const variables = { credits: parseInt(amount, 10) };
 
-            const response = await fetch(`${import.meta.env.VITE_PAYMENT_BE}`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/payments-be`, {
                 method: 'POST',
                 headers: {
                     'Content-type': 'application/json',
@@ -100,7 +100,7 @@ function Pricing() {
 
         const variables = { authToken, credits: parseInt(credits, 10), email };
 
-        const response = await fetch(`${import.meta.env.VITE_PAYMENT_BE}`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/payments-be`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -162,7 +162,7 @@ function Pricing() {
             };
 
             // Ejecutar mutación
-            const response = await fetch(`${import.meta.env.VITE_PAYMENT_BE}`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/payments-be`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${authToken}`,

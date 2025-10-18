@@ -250,7 +250,7 @@ function Roadmap() {
         },
         body: JSON.stringify(dataToSend),
       });
-      console.log("Se esta utilizando la URL:", import.meta.env.VITE_BACKEND_URL_PREPROCESSING, "/files/analyses");
+      console.log("Se esta utilizando la URL:", import.meta.env.VITE_BACKEND_URL, "/files/analyses");
 
   
       setPreviewCost("Costo: " + credits_cost.toLocaleString() + " crédito(s)");
