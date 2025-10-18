@@ -204,7 +204,7 @@ function Roadmap() {
       formData.append("email", email);
   
 
-      /*const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL_PREPROCESSING}/files/cost-estimates`, {
+      const previewPromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/cost-estimates`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -213,7 +213,7 @@ function Roadmap() {
         },
         body: JSON.stringify(dataToSend),
       });
-      console.log("Se esta utilizando la URL:", import.meta.env.VITE_BACKEND_URL_PREPROCESSING, "/files/cost-estimates");
+      console.log("Se esta utilizando la URL:", import.meta.env.VITE_BACKEND_URL, "/files/cost-estimates");
 
 
       const previewResponse = await previewPromise;
@@ -222,7 +222,7 @@ function Roadmap() {
       }
 
   
-      const previewResult = await previewResponse.json();*/
+      const previewResult = await previewResponse.json();
 
       if (!userData || !userData.email) {
         toast.error("Esperando los datos del usuario...");
@@ -242,7 +242,7 @@ function Roadmap() {
 
       if (!canPay) toast.error('Créditos insuficientes 😔');
   
-      const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_URL_PREPROCESSING}/files/analyses`, {
+      const analyzePromise = fetch(`${import.meta.env.VITE_BACKEND_URL}/files/analyses`, {
         method: 'POST',
         headers: { 
           Authorization: `Bearer ${authToken}`,
